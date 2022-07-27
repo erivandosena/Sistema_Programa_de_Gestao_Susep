@@ -18,8 +18,8 @@ Docker-compose (opcional neste momento)
 `$> docker build -t user_registro/pdg-susep-ubuntu20:latest .`  
 `$> docker push user_registro/pdg-susep-ubuntu20:latest .`
 
-#### Saídas no terminal
-```
+#### Saídas do terminal no console
+```console
 erivando@wsl-ubuntu:/home/pgd-susep$ docker build -t erivando/pdg-susep-ubuntu20:latest .
 Sending build context to Docker daemon  50.52MB
 Step 1/25 : FROM mcr.microsoft.com/dotnet/aspnet:3.1-focal AS base
@@ -2162,7 +2162,7 @@ Successfully built 49ab745c26be
 Successfully tagged erivando/pdg-susep-ubuntu20:latest
 ```
 
-```
+```console
 erivando@wsl-ubuntu:/home/pgd-susep$ docker push erivando/pdg-susep-ubuntu20:latest
 The push refers to repository [docker.io/erivando/pdg-susep-ubuntu20]
 5078007a2d3d: Layer already exists
