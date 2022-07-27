@@ -35,7 +35,7 @@
 # ================================================================
 FROM mcr.microsoft.com/dotnet/aspnet:3.1-focal AS base
 
-LABEL vendor="SUSEP/DTI/Unilab" maintainer="Erivando Sena<erivandoramos@unilab.edu.br>" description="Programa de Gestão e Desempenho (PGD), Versão Docker" version="1.7.0"
+LABEL vendor="SUSEP/Unilab" maintainer="Erivando Sena<erivandoramos@unilab.edu.br>" description="Programa de Gestão e Desempenho (PGD)/, Versão SUSEP em Docker" version="1.7.0"
 
 RUN addgroup --group susep --gid 1000 \
 && adduser --ingroup susep --no-create-home --uid 1000 --disabled-password --gecos '' pgd \
@@ -68,7 +68,7 @@ RUN dotnet nuget sources enable -Name "nuget.org"
 RUN dotnet nuget locals all --list
 RUN dotnet nuget locals all --clear
 
-# Adicionando referência de pacotes usentes no projeto
+# Adicionando referência de pacotes ausentes no projeto
 RUN dotnet add "Susep.SISRH.Domain/Susep.SISRH.Domain.csproj" package Newtonsoft.Json
 
 RUN dotnet restore Susep.SISRH.sln -- configfile ~/.nuget/NuGet/Nuget.Config
