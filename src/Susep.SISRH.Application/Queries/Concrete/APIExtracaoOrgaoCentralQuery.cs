@@ -54,9 +54,9 @@ namespace Susep.SISRH.Application.Queries.Concrete
                     connection.Close();
                 }
             }
-            catch (System.Exception ex)
+            catch (System.Exception ex) when (ex.Message != null)
             {
-
+                Console.Write(ex);
             }
 
             return result;

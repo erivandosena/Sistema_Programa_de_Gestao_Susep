@@ -32,7 +32,7 @@ namespace Susep.SISRH.Infrastructure.Repositories
             IQueryable<Pessoa> pessoa = Entity
                 .Include(p => p.Unidade);
 
-            //Filtra inicialmente somente pelo CPF (se tiver enviado o CPF para filtrar)
+            //Filtra inicialmente somente pelo CPF
             if (!string.IsNullOrEmpty(cpf))
             {
                 pessoa = pessoa.Where(p => p.Cpf == cpf);
@@ -41,17 +41,13 @@ namespace Susep.SISRH.Infrastructure.Repositories
 
             //Na sequência, filtra pelo email
             if (!string.IsNullOrEmpty(email))
-            {   
-                if (retorno == null || !retorno.Any())
-                {
-                    //Se o filtro não tiver retornado pelo CPF, busca apenas pelo email para ver se acha
-                    retorno = await pessoa.Where(p => p.Email == email).ToListAsync();
-                }
-                else if (retorno.Count() > 1)
-                { 
-                    //Se tiver retornado mais de um pelo CPF, filtra também pelo email
+            {
+                //Se tiver retornado mais de um pelo CPF, filtra também pelo email
+                if (retorno.Count() > 1)
                     retorno = retorno.Where(p => p.Email == email).ToList();
-                }
+                //Se o filtro não tiver retornado pelo CPF, busca apenas pelo email para ver se acha
+                else if(!retorno.Any())
+                    retorno = await pessoa.Where(p => p.Email == email).ToListAsync();
             }
 
             return retorno.FirstOrDefault();

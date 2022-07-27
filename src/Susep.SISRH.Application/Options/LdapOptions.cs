@@ -6,11 +6,6 @@ namespace Susep.SISRH.Application.Options
 {
     public class LdapOptions
     {
-        public LdapConfiguration[] Configurations { get; set; }
-    }
-        
-    public class LdapConfiguration
-    {
 
         public string Url { get; set; }
         public int Port { get; set; }
@@ -24,6 +19,4 @@ namespace Susep.SISRH.Application.Options
         public string EmailAttributeFilter { get; set; }
 
     }
-
-
 }
