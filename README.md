@@ -5,17 +5,17 @@
 #### Requisitos do ambiente para o build da imagem
 
 **Em Linux (Ubuntu/Debian):**
-Docker
-Docker-compose (opcional neste momento)
+Docker  
+Docker-compose (opcional neste momento)  
 
-**Em Windows:**
-WSL/2 (Ubuntu/Debian)
-Docker
-Docker-compose (opcional neste momento)
+**Em Windows:** 
+WSL/2 (Ubuntu/Debian)  
+Docker  
+Docker-compose (opcional neste momento)  
 
 #### Execução
 
-`$> docker build -t user_registro/pdg-susep-ubuntu20:latest .`
+`$> docker build -t user_registro/pdg-susep-ubuntu20:latest .`  
 `$> docker push user_registro/pdg-susep-ubuntu20:latest .`
 
 #### Saídas no console do terminal
