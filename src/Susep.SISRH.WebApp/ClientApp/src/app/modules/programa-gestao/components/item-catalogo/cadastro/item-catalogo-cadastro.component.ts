@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ItemCatalogoDataService } from '../../../services/item-catalogo.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IItemCatalogo, IItemCatalogoAssunto } from '../../../models/item-catalogo.model';
@@ -33,8 +33,6 @@ export class ItemCatalogoCadastroComponent implements OnInit {
   ganhoProdutividade: number;
 
   public tempoMask: any;
-
-  @ViewChild('entregasEsperadas', { static: true }) entregasEsperadas: ElementRef;
 
   constructor(
     public router: Router,

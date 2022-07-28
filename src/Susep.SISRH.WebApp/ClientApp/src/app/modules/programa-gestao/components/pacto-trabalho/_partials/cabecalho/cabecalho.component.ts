@@ -5,7 +5,6 @@ import { IPactoTrabalho, IPactoTrabalhoAtividade } from '../../../../models/pact
 import { PactoTrabalhoDataService } from '../../../../services/pacto-trabalho.service';
 import { PerfilEnum } from '../../../../enums/perfil.enum';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DecimalValuesHelper } from '../../../../../../shared/helpers/decimal-valuesr.helper';
 
 @Component({
   selector: 'pacto-cabecalho',
@@ -21,10 +20,7 @@ export class PactoCabecalhoComponent implements OnInit {
   minDataInicio: any;
   minDataConclusao: any;
 
-  public tempoMask: any;
-
   @ViewChild('modalDatas', { static: true }) modalDatas;
-  @ViewChild('modalFrequenciaPresencial', { static: true }) modalFrequenciaPresencial;
 
   @Input() dadosPacto: BehaviorSubject<IPactoTrabalho>;
   @Input() atividades: BehaviorSubject<IPactoTrabalhoAtividade[]>;
@@ -34,12 +30,9 @@ export class PactoCabecalhoComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
     private formBuilder: FormBuilder,
-    private decimalValuesHelper: DecimalValuesHelper,
     private pactoTrabalhoDataService: PactoTrabalhoDataService,) { }
 
   ngOnInit() {
-
-    this.tempoMask = this.decimalValuesHelper.numberMask(1, 0);
 
     this.form = this.formBuilder.group({
       dataInicio: [null, [Validators.required]],
@@ -66,11 +59,10 @@ export class PactoCabecalhoComponent implements OnInit {
       dados.pactoTrabalhoId = this.dadosPacto.value.pactoTrabalhoId;
       this.pactoTrabalhoDataService.AlterarPeriodo(dados).subscribe(
         r => {
-          this.pactoTrabalhoDataService.ObterPacto(dados.pactoTrabalhoId).subscribe(res => {
-            this.dadosPacto.next(res.retorno);
-            this.modalService.dismissAll();
-          });          
-          
+          this.dadosPacto.value.dataInicio = this.form.get('dataInicio').value;
+          this.dadosPacto.value.dataFim = this.form.get('dataFim').value;
+          this.dadosPacto.next(this.dadosPacto.value);
+          this.modalService.dismissAll();
         });
     }
     else {
@@ -112,9 +104,5 @@ export class PactoCabecalhoComponent implements OnInit {
 
   fecharModal() {
     this.modalService.dismissAll();
-  }
-
-  editarFrequenciaPresencial() {
-    this.modalService.open(this.modalFrequenciaPresencial, { size: 'sm' });
   }
 }

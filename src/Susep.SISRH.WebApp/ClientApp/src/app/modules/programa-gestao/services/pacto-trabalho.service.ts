@@ -200,15 +200,6 @@ export class PactoTrabalhoDataService {
     }));
   }
 
-  Reabrir(pactotrabalhoId: string): Observable<ApplicationResult<boolean>> {
-    const baseURI = this.configuration.getApiGatewayUrl();
-    const url = `${baseURI}pactotrabalho/${pactotrabalhoId}/reabrir`;
-
-    return this.service.put(url, {}).pipe(map((response: any) => {
-      return response;
-    }));
-  }
-
   Concluir(pactotrabalhoId: string): Observable<ApplicationResult<boolean>> {
     const baseURI = this.configuration.getApiGatewayUrl();
     const url = `${baseURI}pactotrabalho/${pactotrabalhoId}/concluir`;
@@ -275,7 +266,7 @@ export class PactoTrabalhoDataService {
     }));
   }
 
-  ResponderSolicitacao(dados: IPactoTrabalhoSolicitacao): Observable<ApplicationResult<IPactoTrabalho>> {
+  ResponderSolicitacao(dados: IPactoTrabalhoSolicitacao): Observable<ApplicationResult<IPactoTrabalhoAtividade[]>> {
     const baseURI = this.configuration.getApiGatewayUrl();
     const url = `${baseURI}pactotrabalho/${dados.pactoTrabalhoId}/solicitacao/${dados.pactoTrabalhoSolicitacaoId}/responder`;
 

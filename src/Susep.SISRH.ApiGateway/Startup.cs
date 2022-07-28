@@ -18,9 +18,14 @@ namespace Susep.SISRH.ApiGateway
         public IConfiguration Configuration { get; }
         public IConfigurationBuilder Builder { get; }
 
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            Builder = new ConfigurationBuilder().SetBasePath(Path.Combine(env.ContentRootPath, "Settings"))
+                                                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
+                                                .AddJsonFile($"ocelot.{env.EnvironmentName}.json", true, true)
+                                                .AddEnvironmentVariables();
+
+            Configuration = Builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)

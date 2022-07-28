@@ -7,7 +7,6 @@ import { PactoTrabalhoDataService } from '../../../../../services/pacto-trabalho
 import { PerfilEnum } from '../../../../../enums/perfil.enum';
 import { ApplicationStateService } from '../../../../../../../shared/services/application.state.service';
 import { IUsuario } from '../../../../../../../shared/models/perfil-usuario.model';
-import { ItemCatalogoDataService } from '../../../../../services/item-catalogo.service';
 
 @Component({
   selector: 'pacto-detalhes-solicitacao',
@@ -33,7 +32,6 @@ export class PactoDetalhesSolicitacaoComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
     private formBuilder: FormBuilder,
-    private itemCatalogoDataService: ItemCatalogoDataService,
     private pactoTrabalhoDataService: PactoTrabalhoDataService,
     private applicationStateService: ApplicationStateService) { }
 
@@ -58,11 +56,8 @@ export class PactoDetalhesSolicitacaoComponent implements OnInit {
       this.solicitacao = JSON.parse(this.dadosSolicitacao.value.dadosSolicitacao);
 
       if (this.dadosSolicitacao.value.tipoSolicitacaoId === 603 || this.dadosSolicitacao.value.tipoSolicitacaoId === 604) {
-        const atividadeSolicitacao = this.dadosPacto.value.atividades.filter(a => a.pactoTrabalhoAtividadeId === this.solicitacao.pactoTrabalhoAtividadeId)[0];
-        if (this.dadosSolicitacao.value.tipoSolicitacaoId === 603 && atividadeSolicitacao) {
-          this.solicitacao = atividadeSolicitacao;
-        }
         const descricao = this.solicitacao.justificativa;
+        this.solicitacao = this.dadosPacto.value.atividades.filter(a => a.pactoTrabalhoAtividadeId === this.solicitacao.pactoTrabalhoAtividadeId)[0];
         this.solicitacao.descricao = descricao;
 
       }
@@ -80,15 +75,15 @@ export class PactoDetalhesSolicitacaoComponent implements OnInit {
     this.responder(true);
   }
 
-  responder(resposta: boolean) {
+  responder(resposta: boolean, ajustarPrazo: boolean = false) {
     if (this.form.valid) {
       const dados: IPactoTrabalhoSolicitacao = this.form.value;
       dados.pactoTrabalhoId = this.dadosPacto.value.pactoTrabalhoId;
       dados.pactoTrabalhoSolicitacaoId = this.dadosSolicitacao.value.pactoTrabalhoSolicitacaoId;
       dados.aprovado = resposta;
       this.pactoTrabalhoDataService.ResponderSolicitacao(dados).subscribe(
-        dadosPactoAtualizado => {
-          this.dadosPacto.next(dadosPactoAtualizado.retorno);
+        r => {
+          this.dadosPacto.next(this.dadosPacto.value);
         });
     }
     else {

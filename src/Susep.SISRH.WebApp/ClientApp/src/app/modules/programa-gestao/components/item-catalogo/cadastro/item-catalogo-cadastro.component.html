@@ -10,16 +10,14 @@
           <div class="col-sm-8">
             <div class="field">
               <field-validation [classList]="['br-input']" errorMessage="Campo obrigatório." label="Título">
-                <input maxlength="500" #titulo id="titulo" type="text" placeholder="Insira um texto" name="titulo" formControlName="titulo">
-                <input-chars-cunter [element]="titulo"></input-chars-cunter>
+                <input id="titulo" type="text" placeholder="Insira um texto" name="titulo" formControlName="titulo">
               </field-validation>
             </div>
           </div>
           <div class="col-sm-4">
             <div class="field">
               <field-validation [classList]="['br-input']" errorMessage="Campo obrigatório." label="Faixa de complexidade">
-                <input maxlength="20" #complexidade id="complexidade" type="text" placeholder="Insira um texto" name="complexidade" formControlName="complexidade" (change)="mudarComplexidade($event.target.value)">
-                <input-chars-cunter [element]="complexidade"></input-chars-cunter>
+                <input id="complexidade" type="text" placeholder="Insira um texto" name="complexidade" formControlName="complexidade" (change)="mudarComplexidade($event.target.value)">
               </field-validation>
             </div>
           </div>
@@ -28,8 +26,7 @@
           <div class="col-sm-12">
             <div class="field">
               <field-validation [classList]="['br-input']" errorMessage="Campo obrigatório." label="Parâmetros para definição da faixa de complexidade">
-                <textarea maxlength="200" #definicaoComplexidade id="definicaoComplexidade" type="text" placeholder="Insira um texto" name="definicaoComplexidade" formControlName="definicaoComplexidade"></textarea>
-                <input-chars-cunter [element]="definicaoComplexidade"></input-chars-cunter>
+                <textarea id="definicaoComplexidade" type="text" placeholder="Insira um texto" name="definicaoComplexidade" formControlName="definicaoComplexidade"></textarea>
               </field-validation>
             </div>
           </div>
@@ -87,8 +84,7 @@
           <div class="col-sm-12">
             <div class="field">
               <field-validation [classList]="['br-input']" errorMessage="Campo obrigatório." label="Entregas esperadas">
-                <textarea maxlength="2000" #entregasEsperadas id="entregasEsperadas" type="text" placeholder="Insira um texto" name="entregasEsperadas" formControlName="entregasEsperadas"></textarea>
-                <input-chars-cunter [element]="entregasEsperadas"></input-chars-cunter>
+                <textarea id="entregasEsperadas" type="text" placeholder="Insira um texto" name="entregasEsperadas" formControlName="entregasEsperadas"></textarea>
               </field-validation>
             </div>
           </div>
@@ -97,8 +93,7 @@
           <div class="col-sm-12">
             <div class="field">
               <field-validation [classList]="['br-input']" errorMessage="Campo obrigatório." label="Outras informações">
-                <textarea maxlength="2000" #descricao id="descricao" type="text" placeholder="Insira um texto" name="descricao" formControlName="descricao"></textarea>
-                <input-chars-cunter [element]="descricao"></input-chars-cunter>
+                <textarea id="descricao" type="text" placeholder="Insira um texto" name="descricao" formControlName="descricao"></textarea>
               </field-validation>
             </div>
           </div>

@@ -41,7 +41,6 @@ export class PactoListaAtividadeComponent implements OnInit {
 
   permiteMaisDeUma: boolean;
   posDefinido: boolean;
-  teletrabalhoParcial: boolean;
 
   objetosDoPlanoTrabalho: IPactoTrabalhoObjeto[];
 
@@ -66,9 +65,9 @@ export class PactoListaAtividadeComponent implements OnInit {
 
     this.dadosPacto.subscribe(val => this.carregarDados());
 
+
     this.form = this.formBuilder.group({
       itemCatalogoId: [null, [Validators.required]],
-      execucaoRemota: [null],
       quantidade: [1, [Validators.required]],
       tempoPrevistoPorItem: [null, []],
       descricao: [null, []],
@@ -78,10 +77,6 @@ export class PactoListaAtividadeComponent implements OnInit {
   private carregarDados() {
     this.carregarAtividades();
     this.carregarObjetos();
-
-    this.teletrabalhoParcial = this.dadosPacto.value.formaExecucaoId === 102;
-    if (this.teletrabalhoParcial)
-      this.form.get('execucaoRemota').setValidators(Validators.required);
 }
 
   private carregarObjetos() {
@@ -97,7 +92,6 @@ export class PactoListaAtividadeComponent implements OnInit {
   fillFormCadastro() {
     this.form.patchValue({
       itemCatalogoId: this.atividadeEdicao.itemCatalogoId,
-      execucaoRemota: this.atividadeEdicao.execucaoRemota,
       quantidade: this.atividadeEdicao.quantidade,
       tempoPrevistoPorItem: this.atividadeEdicao.tempoPrevistoPorItem,
       descricao: this.atividadeEdicao.descricao,

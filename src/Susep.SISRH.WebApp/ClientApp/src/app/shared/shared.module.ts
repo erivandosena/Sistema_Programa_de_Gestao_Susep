@@ -42,7 +42,6 @@ import { MatButtonToggleModule, MatSelectModule, MatAutocompleteModule, MatProgr
 import { ModoExibicaoGuard } from './helpers/modo-exibicao.guard.helper';
 import { FiltrarItensJaEscolhidosPipe } from './components/input-autocomplete-async/filtrar-ja-escolhidos.pipe';
 import { InputCurrencyComponent } from './components/input-currency/input-currency.component';
-import { InputCharsCunterComponent } from './components/input-chars-cunter/input-chars-cunter.component';
 
 registerLocaleData(localePt)
 
@@ -72,7 +71,6 @@ registerLocaleData(localePt)
     HomePublicaComponent,
     PaginationComponent,
     InputValidationComponent,
-    InputCharsCunterComponent,
     CustomDatepickerComponent,
     SecureInputComponent,
     InputDatepickerDirective,
@@ -90,7 +88,6 @@ registerLocaleData(localePt)
     HomePublicaComponent,
     PaginationComponent,
     InputValidationComponent,
-    InputCharsCunterComponent,
     CustomDatepickerComponent,
     SecureInputComponent,
     InputRatingComponent,

@@ -3,6 +3,3 @@
 README.md
 LICENSE
 Dockerfile
-docker-compose.yml
-/config
-/logs

@@ -37,10 +37,8 @@ export class PactoTrabalhoDetalhesComponent implements OnInit {
 
   @ViewChild('modalEnviarAceite', { static: true }) modalEnviarAceite;
   @ViewChild('modalAceite', { static: true }) modalAceite;
-  @ViewChild('modalAceiteComTermoAceite', { static: true }) modalAceiteComTermoAceite;
   @ViewChild('modalFluxo', { static: true }) modalFluxo;
   @ViewChild('modalConcluirExecucao', { static: true }) modalConcluirExecucao;
-  @ViewChild('modalReabrirExecucao', { static: true }) modalReabrirExecucao;  
 
   horaInicio = 0;
   horaFim = 8;
@@ -59,7 +57,6 @@ export class PactoTrabalhoDetalhesComponent implements OnInit {
   termoAceite: string;
   aceitouTermos: boolean;
   usuarioPodeAceitar: boolean;
-  usuarioPodeReabrir: boolean;
 
   tempoPrevistoTotal = 0;
   saldoHoras = 0;
@@ -137,7 +134,7 @@ export class PactoTrabalhoDetalhesComponent implements OnInit {
           result => {
             this.feriados = result.retorno;
             this.carregarEventos();
-          });        
+          });
 
         this.alterarAba('atividades');
         this.definirClasseTextoSituacao();
@@ -148,17 +145,8 @@ export class PactoTrabalhoDetalhesComponent implements OnInit {
 
   verificarSeUsuarioPodeAceitar() {
     if (this.perfilUsuario.pessoaId && this.dadosPacto.value.responsavelEnvioAceite) {
-      //O usuário pode aceitar o plano se o plano é dele, mas não foi ele que enviou para aceite
-      //                              ou se o plano não é dele, mas quem enviou para aceite foi a pessoa do plano
-
-      this.usuarioPodeAceitar =
-        (this.perfilUsuario.pessoaId === this.dadosPacto.value.pessoaId &&
-         this.perfilUsuario.pessoaId.toString() !== this.dadosPacto.value.responsavelEnvioAceite.toString()) ||
-        (this.perfilUsuario.pessoaId !== this.dadosPacto.value.pessoaId &&
-         this.dadosPacto.value.pessoaId.toString() === this.dadosPacto.value.responsavelEnvioAceite.toString());
+      this.usuarioPodeAceitar = this.perfilUsuario.pessoaId.toString() !== this.dadosPacto.value.responsavelEnvioAceite.toString();
     }
-
-    this.usuarioPodeReabrir = this.dadosPacto.value.pessoaId !== this.perfilUsuario.pessoaId;
   }
 
   carregarItensCatalogo() {
@@ -341,39 +329,36 @@ export class PactoTrabalhoDetalhesComponent implements OnInit {
     }
   }
 
+  enviarParaAceite () {
+    this.pactoTrabalhoDataService.EnviarParaAceite(this.dadosPacto.value.pactoTrabalhoId).subscribe(
+      resultado => {
+        this.carregarDadosPacto();
+      }
+    );
+  }
+
   toggleSituacao(event: MatSlideToggleChange) {
     this.aceitouTermos = event.checked;
   }
 
-  aceitar() {
-    if (this.dadosPacto.value.pessoaId === this.perfilUsuario.pessoaId) {
+  abrirEnvioAceite() {
+    this.modalService.open(this.modalEnviarAceite, { size: 'sm' });
+  }
 
-      this.planoTrabalhoDataService.ObterTermoAceite(this.dadosPacto.value.planoTrabalhoId).subscribe(
-        r => {
-          this.termoAceite = r.retorno.termoAceite;
-          this.modalService.open(this.modalAceiteComTermoAceite, { size: 'sm' });
-        });
-    }
-    else {
-      this.modalService.open(this.modalAceite, { size: 'sm' });
-    }
+  aceitar() {
+    this.planoTrabalhoDataService.ObterTermoAceite(this.dadosPacto.value.planoTrabalhoId).subscribe(
+      r => {
+        this.termoAceite = r.retorno.termoAceite;
+        this.modalService.open(this.modalAceite, { size: 'sm' });
+      });
   }
 
   confirmarAceite() {
-    if (this.dadosPacto.value.situacaoId === 401) {
-      this.pactoTrabalhoDataService.EnviarParaAceite(this.dadosPacto.value.pactoTrabalhoId).subscribe(
-        resultado => {
-          this.carregarDadosPacto();
-        }
-      );
-    }
-    else {
-      this.pactoTrabalhoDataService.Aceitar(this.dadosPacto.value.pactoTrabalhoId).subscribe(
-        resultado => {
-          this.carregarDadosPacto();
-        }
-      );
-    }
+    this.pactoTrabalhoDataService.Aceitar(this.dadosPacto.value.pactoTrabalhoId).subscribe(
+      resultado => {
+        this.carregarDadosPacto();
+      }
+    );
   }
 
   rejeitar() {
@@ -420,12 +405,8 @@ export class PactoTrabalhoDetalhesComponent implements OnInit {
     );
   }
 
-  abrirTelaConcluirExecucao() {
+  abrirTelConcluirExecucao() {
     this.modalService.open(this.modalConcluirExecucao, { size: 'sm' });
-  }
-
-  abrirTelaReabrirExecucao() {
-    this.modalService.open(this.modalReabrirExecucao, { size: 'sm' });
   }
 
   concluirExecucao() {
@@ -435,16 +416,6 @@ export class PactoTrabalhoDetalhesComponent implements OnInit {
       }
     );
   }
-
-  concluirReabertura() {
-    this.pactoTrabalhoDataService.Reabrir(this.dadosPacto.value.pactoTrabalhoId).subscribe(
-      resultado => {
-        this.carregarDadosPacto();
-      }
-    );
-  }
-
-  
 
   fecharModal() {
     this.modalService.dismissAll();

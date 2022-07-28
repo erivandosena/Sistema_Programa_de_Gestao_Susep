@@ -1,3 +1,4 @@
+
 # Sobre o Dockerfile Multi-stage
 ###########################################################
 # 1. Evita a criação manual de imagens intermediárias.
@@ -35,24 +36,31 @@
 # ================================================================
 FROM mcr.microsoft.com/dotnet/aspnet:3.1-focal AS base
 
-LABEL vendor="SUSEP" maintainer="Erivando Sena<erivandoramos@unilab.edu.br>" description="Programa de Gestão e Desempenho (PGD)/, Versão SUSEP em Docker" version="1.7.0"
+LABEL vendor="SUSEP" maintainer="Erivando Sena<erivandoramos@unilab.edu.br>" description="Programa de Gestão e Desempenho (PGD), Versão SUSEP Docker" version="1.7.x"
 
-RUN addgroup --group susep --gid 1000 \
-&& adduser --ingroup susep --no-create-home --uid 1000 --disabled-password --gecos '' pgd \
-&& mkdir /app && chown -R pgd:susep /app
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && apt-get autoremove -y \
+ && apt-get install -y sudo \
+ && addgroup --group susep \
+ && adduser --disabled-password --no-create-home --ingroup susep --gecos '' pgd \
+ && chmod 755 /etc/sudoers.d \
+ && usermod -aG sudo pgd \
+ && echo 'pgd ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers.d/pgd \
+ && chmod 440 /etc/sudoers.d/pgd \
+ && mkdir /app \
+ && chown -Rf pgd:susep /app
 
 EXPOSE 80
 
 # ################################################################
 #                        2ª ETAPA                                #
 # ================================================================
-# Construção para publicação.                                    #
+# Definir a imagem de SDK para construção da publicação.         #
 # ================================================================
 FROM mcr.microsoft.com/dotnet/sdk:3.1-focal as build
 
-RUN apt-get update -yq \
- && apt-get upgrade -y \
- && apt-get autoremove -y \
+RUN apt-get update \
  && apt-get install -y nodejs npm --no-install-recommends 
 
 RUN echo "NODE Version:" && node --version
@@ -80,11 +88,14 @@ RUN dotnet publish --configuration Release
 # ################################################################
 #                        3ª ETAPA                                #
 # ================================================================
-# Publicação do código das aplicações.                           #
+# Publicação das aplicações.                                     #
 # ================================================================
 FROM base AS final
+
 WORKDIR /app
+
 USER pgd
+# Para obter privilégios de root, no container use: sudo -i
 
 COPY --chown=pgd:susep --from=publication /src/Susep.SISRH.WebApi/bin/Release/netcoreapp3.1/publish /app/api/
 COPY --chown=pgd:susep --from=publication /src/Susep.SISRH.ApiGateway/bin/Release/netcoreapp3.1/publish /app/gateway/

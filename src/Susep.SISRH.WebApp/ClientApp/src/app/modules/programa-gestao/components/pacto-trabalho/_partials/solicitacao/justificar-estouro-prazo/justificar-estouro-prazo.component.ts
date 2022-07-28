@@ -33,7 +33,6 @@ export class JustificarEstouroPrazoPactoComponent implements OnInit {
     this.form = this.formBuilder.group({
       justificativa: [null, [Validators.required, Validators.minLength(5)]],
     });
-    this.form.get('justificativa').markAsDirty();
   }
 
   carregarAtividades() {

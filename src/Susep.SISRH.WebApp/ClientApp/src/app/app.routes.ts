@@ -32,7 +32,6 @@ import { AssuntoEdicaoComponent } from "./modules/assunto/components/edicao/assu
 import { ModoExibicaoGuard } from "./shared/helpers/modo-exibicao.guard.helper";
 import { ObjetoPesquisaComponent } from "./modules/objeto/components/objeto-pesquisa.component";
 import { ObjetoEdicaoComponent } from "./modules/objeto/components/edicao/objeto-edicao.component";
-import { AgendamentoPresencialComponent } from "./modules/programa-gestao/components/agendamento-presencial/agendamento-presencial.component";
 
 
 const routes: Routes = [
@@ -46,13 +45,13 @@ const routes: Routes = [
       { path: 'cadastro', component: PlanoTrabalhoCadastroComponent, data: { breadcrumb: 'Cadastro', roles: [PerfilEnum.Diretor, PerfilEnum.CoordenadorGeral, PerfilEnum.ChefeUnidade] } },
       { path: 'detalhar/:id', component: PlanoTrabalhoDetalhesComponent, data: { breadcrumb: 'Detalhes' } },     
       {
-        path: 'catalogo', canActivate: [AuthGuard], data: { breadcrumb: 'Lista de atividade', roles: [PerfilEnum.GestorIndicadores] }, children: [      
+        path: 'catalogo', data: { breadcrumb: 'Lista de atividade', roles: [PerfilEnum.GestorIndicadores] }, children: [      
           { path: '', component: CatalogoPesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
           { path: 'pesquisa', component: CatalogoPesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
           { path: 'cadastro', component: CatalogoCadastroComponent, data: { breadcrumb: 'Cadastro' } },
           { path: 'editar/:id', component: CatalogoEdicaoComponent, data: { breadcrumb: 'Editar' } },
           {
-            path: 'item', canActivate: [AuthGuard], data: { breadcrumb: 'Atividade' }, children: [
+            path: 'item', data: { breadcrumb: 'Atividade' }, children: [
               { path: '', component: ItemCatalogoPesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
               { path: 'pesquisa', component: ItemCatalogoPesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
               { path: 'cadastro', component: ItemCatalogoCadastroComponent, data: { breadcrumb: 'Cadastro' } },
@@ -65,7 +64,7 @@ const routes: Routes = [
         ]
       },  
       {
-        path: 'pactotrabalho', canActivate: [AuthGuard], data: { breadcrumb: 'Plano de trabalho' }, children: [      
+        path: 'pactotrabalho', data: { breadcrumb: 'Plano de trabalho' }, children: [      
           { path: '', component: PactoTrabalhoPesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
           { path: 'pesquisa', component: PactoTrabalhoPesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
           { path: 'cadastro', component: PactoTrabalhoCadastroComponent, data: { breadcrumb: 'Cadastro' } },
@@ -73,10 +72,9 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'atividade', canActivate: [AuthGuard], data: { breadcrumb: 'Atividades' }, children: [      
+        path: 'atividade', data: { breadcrumb: 'Atividades' }, children: [      
           { path: '', component: AtividadesPactoAtualComponent, data: { breadcrumb: 'Pacto atual' } },
           { path: 'atual', component: AtividadesPactoAtualComponent, data: { breadcrumb: 'Pacto atual' } },
-          { path: 'atual/:id', component: AtividadesPactoAtualComponent, data: { breadcrumb: 'Pacto atual' } },
           { path: 'habilitacao', component: PlanoHabilitacaoComponent, data: { breadcrumb: 'Habilitação' } },
           { path: 'historico', component: AtividadesServidorHistoricoComponent, data: { breadcrumb: 'Meus planos de trabalho' } },
         ]
@@ -84,17 +82,17 @@ const routes: Routes = [
     ],
   },  
   {
-    path: 'pessoa', canActivate: [AuthGuard], data: { breadcrumb: 'Pessoas' }, children: [      
+    path: 'pessoa', canActivate: [AuthGuard], data: { breadcrumb: 'Pessoas', roles: [PerfilEnum.GestorPessoas] }, children: [      
       { path: '', component: PessoaPesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
       { path: 'pesquisa', component: PessoaPesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
-      //{ path: 'editar/:id', component: PessoaEdicaoComponent, data: { breadcrumb: 'Editar' } },
+      { path: 'editar/:id', component: PessoaEdicaoComponent, data: { breadcrumb: 'Editar' } },
     ]
   },
   {
-    path: 'unidade', canActivate: [AuthGuard], data: { breadcrumb: 'Unidades' }, children: [      
+    path: 'unidade', canActivate: [AuthGuard], data: { breadcrumb: 'Unidades', roles: [PerfilEnum.GestorPessoas] }, children: [      
       { path: '', component: UnidadePesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
       { path: 'pesquisa', component: UnidadePesquisaComponent, data: { breadcrumb: 'Pesquisa' } },
-      //{ path: 'editar/:id', component: UnidadeEdicaoComponent, data: { breadcrumb: 'Editar' } },
+      { path: 'editar/:id', component: UnidadeEdicaoComponent, data: { breadcrumb: 'Editar' } },
     ]
   },
   {
@@ -113,8 +111,6 @@ const routes: Routes = [
       { path: 'editar/:id', component: ObjetoEdicaoComponent, data: { breadcrumb: 'Editar' } },
     ]
   },
-  { path: 'agendamento', canActivate: [AuthGuard], component: AgendamentoPresencialComponent, data: { breadcrumb: 'Agendamento presencial' }, pathMatch: 'full' },  
-  
 ];
 
 export const RoutingModule: ModuleWithProviders = RouterModule.forRoot(routes);
