@@ -35,7 +35,7 @@
 # ================================================================
 FROM mcr.microsoft.com/dotnet/aspnet:3.1-focal AS base
 
-LABEL vendor="SUSEP/Unilab" maintainer="Erivando Sena<erivandoramos@unilab.edu.br>" description="Programa de Gestão e Desempenho (PGD)/, Versão SUSEP em Docker" version="1.7.0"
+LABEL vendor="SUSEP" maintainer="Erivando Sena<erivandoramos@unilab.edu.br>" description="Programa de Gestão e Desempenho (PGD)/, Versão SUSEP em Docker" version="1.7.0"
 
 RUN addgroup --group susep --gid 1000 \
 && adduser --ingroup susep --no-create-home --uid 1000 --disabled-password --gecos '' pgd \
