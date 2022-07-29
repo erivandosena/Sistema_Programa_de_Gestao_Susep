@@ -9,6 +9,7 @@
 # Instruções
 ###########################################################
 # docker build -t erivando/pdg-susep-ubuntu20:latest .
+# docker system prune -af
 # Remover código da linha 68 em src/Susep.SISRH.sln caso o "src" seja substituído.
 # {3D3D3720-BE8D-425F-93BB-3CC2C5D0FF67}.Release|Any CPU.Deploy.0 = Release|Any CPU
 
@@ -17,7 +18,6 @@
 # O Sistema PGD (versão SUSEP) é um sistema utilizado para pactuação e monitoramento dos resultados do Programa de Gestão (teletrabalho).
 # Sistema de Programa de Gestão (SISPG) - Instrução Normativa Nº 65, de 30 de julho de 2020.
 # Secretaria de Avaliação e Gestão da Informação (SESEP)
-# Diretoria de Tecnologia da Informação do Ministério da Economia (DTI ME)
 # Sistema de Recursos Humanos (SISRH)
 # Programa de Gestão e Desempenho (PGD)
 # https://www.gov.br/servidor/pt-br/assuntos/programa-de-gestao
@@ -52,7 +52,10 @@ RUN apt-get update \
  && mkdir /app \
  && chown -Rf pgd:susep /app
 
-EXPOSE 80
+ENV ASPNETCORE_URLS=http://+:80;http://+:8001
+
+EXPOSE 80/tcp
+EXPOSE 8001/tcp
 
 # ################################################################
 #                        2ª ETAPA                                #
