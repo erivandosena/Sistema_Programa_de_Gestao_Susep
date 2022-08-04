@@ -52,10 +52,7 @@ RUN apt-get update \
  && mkdir /app \
  && chown -Rf pgd:susep /app
 
-ENV ASPNETCORE_URLS=http://+:80;http://+:8001
-
-EXPOSE 80/tcp
-EXPOSE 8001/tcp
+EXPOSE 80 443
 
 # ################################################################
 #                        2ª ETAPA                                #
