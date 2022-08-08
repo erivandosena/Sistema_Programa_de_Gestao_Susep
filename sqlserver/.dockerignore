@@ -1,0 +1,8 @@
+LICENSE
+README.md
+.gitignore
+.gitattributes
+.dockerignore
+Dockerfile
+docker-compose.yml
+/mssql-data

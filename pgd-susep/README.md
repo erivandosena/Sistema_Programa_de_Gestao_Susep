@@ -6,17 +6,15 @@
 
 **Em Linux (Ubuntu/Debian):**
 Docker  
-Docker-compose (opcional neste momento)  
 
 **Em Windows:** 
 WSL/2 (Ubuntu/Debian)  
 Docker  
-Docker-compose (opcional neste momento)  
 
-#### Execução
+#### Execução do Build da Imagem
 
 `$> docker build -t user_registro/pdg-susep-ubuntu20:latest .`  
-`$> docker push user_registro/pdg-susep-ubuntu20:latest .`
+`$> docker push user_registro/pdg-susep-ubuntu20:latest`
 
 #### Saídas no console do terminal
 ```console

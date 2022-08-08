@@ -1,0 +1,36 @@
+# Up
+# docker-compose up -d
+# Logs
+# docker-compose logs -f
+
+version: "3.9"
+
+services:
+  # Sql Server Express
+  mssqlserver:
+    #image: erivando/mssqlserverexpress-2019-ubuntu20:latest
+    image: erivando/mssqlserverexpress-2019-ubuntu20:latest
+    container_name: sqlserver_service
+    restart: always
+    environment:
+      ADM_PASSWORD: Sql@server2019Express
+      SA_PASSWORD: "Sql@server2019"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+    ports:
+      - 1433:1433
+    volumes:
+      - ./mssql-data:/var/opt/mssql/data
+      - ./sql-codes/Script-comandos-sql-sobdemanda.sql:/usr/src/sqlserver-init/sqls/Script-comandos-sql-sobdemanda.sql:rw
+    networks:
+       - sqlserver
+
+# networks:
+#   sqlserver:
+#     external: true
+#     name: traefik
+
+networks:
+ sqlserver:
+   name: sqlserver
+   driver: bridge
