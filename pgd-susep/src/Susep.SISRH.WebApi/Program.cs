@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging.EventLog;
 namespace Susep.SISRH.WebApi
 {
     /// <summary>
-    /// Classe de execução do programa
+    /// Classe de execucao do programa
     /// </summary>
     public class Program
     {
         /// <summary>
-        /// Constrói o programa inicial
+        /// Constroi o programa inicial
         /// </summary>
         /// <param name="args"></param>
         public static void Main(string[] args)
@@ -29,7 +29,7 @@ namespace Susep.SISRH.WebApi
                    .ConfigureLogging(logging =>
                    {
                        logging.ClearProviders();
-                       logging.AddEventLog(new EventLogSettings() { Filter = (source, level) => level == LogLevel.Error });
+                       //logging.AddEventLog(new EventLogSettings() { Filter = (source, level) => level == LogLevel.Error });
                    })
                    .UseStartup<Startup>();
     }

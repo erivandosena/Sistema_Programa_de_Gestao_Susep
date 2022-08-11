@@ -17,17 +17,17 @@ using System.IO;
 namespace Susep.SISRH.WebApi
 {
     /// <summary>
-    /// Classe que faz a configuração inicial da aplicação
+    /// Classe que faz a configuracao inicial da aplicacao
     /// </summary>
     public class Startup
     {
         /// <summary>
-        /// Parametros de configuraçao do sistema
+        /// Parametros de configuracao do sistema
         /// </summary>
         public IConfiguration Configuration { get; }
 
         /// <summary>
-        /// Construtor das configuraçoes do sistema
+        /// Construtor das configuracoes do sistema
         /// </summary>
         public IConfigurationBuilder Builder { get; }
 
@@ -47,7 +47,7 @@ namespace Susep.SISRH.WebApi
         }
 
         /// <summary>
-        /// Configura os serviços do sistema
+        /// Configura os servicos do sistema
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -83,7 +83,7 @@ namespace Susep.SISRH.WebApi
                 .AddResourceOwnerValidator<Application.Auth.ResourceOwnerPasswordValidator>();
                 //.AddLdapUsers<OpenLdapAppUser>(Configuration.GetSection("ldapActiveDirectory"), UserStore.InMemory);
 
-            // Configurando o serviço de documentação do Swagger
+            // Configurando o servico de documentacao do Swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1",
@@ -91,7 +91,7 @@ namespace Susep.SISRH.WebApi
                     {
                         Title = "Sistema de recursos humanos",
                         Version = "v1",
-                        Description = "API REST para manutenção de dados de colaboradores da Susep",
+                        Description = "API REST para manutencao de dados de colaboradores da Susep",
                     });
 
                 string caminhoAplicacao =

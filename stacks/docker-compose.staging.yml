@@ -1,0 +1,74 @@
+# by: Erivando Sena | DevOps/SRE | UNILAB
+# docker-compose -p proj-staging -f docker-compose.staging.yml up -d (Compose V1.x)
+# docker compose -p proj-staging -f docker-compose.staging.yml up -d (Compose V2.x)
+
+version: "3.9"
+
+services:
+  # api
+  api-staging:
+    image: erivando/pdg-susep-ubuntu20:latest
+    container_name: api_service_staging
+    restart: always
+    working_dir: /app/api/
+    command: dotnet Susep.SISRH.WebApi.dll
+    volumes:
+      - ./config/api/Settings/staging:/app/api/Settings:ro
+      - ./logs/api/log_staging.log:/app/api/Logs/log.txt:rw
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Homolog
+      # Email
+      - emailOptions__EmailRemetente=teletrabalho@noreply.domainorgao.edu.br
+      - emailOptions__NomeRemetente=Programa de Gestão - Susep
+      - emailOptions__SmtpServer=smtp.noreply.domainorgao.edu.br
+      - emailOptions__Port=25
+      # Ldap
+      - ldapOptions__Configurations__0__Url=xxxxxx
+      - ldapOptions__Configurations__0__Port=xxxxxx
+      - ldapOptions__Configurations__0__BindDN=xxxxxx
+      - ldapOptions__Configurations__0__BindPassword=xxxxxx
+      - ldapOptions__Configurations__0__SearchBaseDC=xxxxxx
+      - ldapOptions__Configurations__0__SearchFilter=xxxxxx
+      - ldapOptions__Configurations__0__CpfAttributeFilter=xxxxxx
+      - ldapOptions__Configurations__0__EmailAttributeFilter=xxxxxx
+      # Database
+      - ConnectionStrings__DefaultConnection=Server=mssqlserver,1433;Database=pgd_staging;User Id=admin;Password=Sql@server2019Express;
+    networks:
+      - pgd
+
+  # gateway
+  gateway-staging:
+    image: erivando/pdg-susep-ubuntu20:latest
+    container_name: gateway_service_staging
+    restart: always
+    command: dotnet Susep.SISRH.ApiGateway.dll
+    working_dir: /app/gateway/
+    volumes:
+      - ./config/gateway/Settings/staging:/app/gateway/Settings:ro
+      - ./logs/gateway/log_staging.log:/app/gateway/Logs/log.txt:rw
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Homolog
+    networks:
+      - pgd
+    depends_on:
+      - api-staging
+
+  # app
+  app-staging:
+    image: erivando/pdg-susep-ubuntu20:latest
+    container_name: app_service_staging
+    restart: always
+    command: dotnet Susep.SISRH.WebApp.dll
+    working_dir: /app/app/
+    volumes:
+      - ./config/app/staging/env.js:/app/app/ClientApp/dist/env.js:ro
+    networks:
+      - pgd
+    depends_on:
+      - api-staging
+      - gateway-staging
+
+networks:
+  pgd:
+    external: true
+    name: traefik

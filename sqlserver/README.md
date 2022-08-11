@@ -113,4 +113,4 @@ Successfully tagged erivando/pdg-susep-ubuntu20:latest
 ```
 
 #### Contribuições
-Sugestões de posíveis melhorias no Dockerfile são sempre bem vindas.
+Sugestões de posíveis melhorias no Dockerfile e Docker Compose são sempre bem vindas.

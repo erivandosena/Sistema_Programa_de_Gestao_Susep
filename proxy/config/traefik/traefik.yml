@@ -1,0 +1,43 @@
+## Static Configuration
+# by: Erivando Sena | DevOps/SRE | UNILAB
+# traefik.yml
+
+# https://ssl-config.mozilla.org/#server=traefik&version=2.1.2&config=intermediate&guideline=5.6
+# https://www.convertsimple.com/convert-toml-to-yaml/
+# https://www.bookstack.cn/read/traefik-2.7-en/
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+
+entryPoints:
+  web:
+    address: :80
+    # http:
+    #   redirections:
+    #     entrypoint:
+    #       to: websecure
+    #       scheme: https
+    
+  websecure:
+    address: :443
+
+api:
+  dashboard: true
+  insecure: true
+  debug: true
+
+providers:
+  docker:
+    endpoint: unix:///var/run/docker.sock
+    exposedByDefault: false
+    watch: true
+    network: traefik
+  file:
+    directory: /etc/traefik/rules
+    watch: true
+
+log:
+  level: INFO # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
+  filePath: /etc/traefik/log/traefik.log
+  format: common # json

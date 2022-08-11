@@ -9,9 +9,6 @@
 # Instruções
 ###########################################################
 # docker build -t erivando/pdg-susep-ubuntu20:latest .
-# docker system prune -af
-# Remover código da linha 68 em src/Susep.SISRH.sln caso o "src" seja substituído/atualizado.
-# {3D3D3720-BE8D-425F-93BB-3CC2C5D0FF67}.Release|Any CPU.Deploy.0 = Release|Any CPU
 
 # Créditos e Desenvolvimento
 ###########################################################
@@ -68,8 +65,6 @@ RUN apt-get update \
 RUN echo "NODE Version:" && node --version
 RUN echo "NPM Version:" && npm --version
 
-RUN mkdir /NuGetPackages
-
 COPY src /src
 
 WORKDIR /src
@@ -77,13 +72,9 @@ WORKDIR /src
 # Habilitando o gerenciamento de pacotes NuGet
 COPY Nuget.config ~/.nuget/NuGet/Nuget.Config
 RUN dotnet nuget enable source nuget.org
-RUN dotnet nuget sources Add -Name "offlinePackages" -Source /NuGetPackages
 RUN dotnet nuget locals all --list
 RUN dotnet nuget locals all --clear
 RUN dotnet nuget update
-RUN dotnet add "Susep.SISRH.WebApi/Susep.SISRH.WebApi.csproj" package Microsoft.AspNetCore --version 2.2.0
-RUN dotnet add "Susep.SISRH.WebApi/Susep.SISRH.WebApi.csproj" package Microsoft.AspNetCore --version 2.2.0
-RUN dotnet add "Susep.SISRH.ApiGateway/Susep.SISRH.ApiGateway.csproj" package Microsoft.AspNetCore --version 2.2.0
 
 # Adicionando referência de pacotes ausentes no projeto
 RUN dotnet add "Susep.SISRH.Domain/Susep.SISRH.Domain.csproj" package Newtonsoft.Json
@@ -96,7 +87,7 @@ RUN dotnet restore Susep.SISRH.sln -- configfile ~/.nuget/NuGet/Nuget.Config
 RUN dotnet build --configuration Release
 
 FROM build AS publication
-RUN dotnet publish --configuration Release --no-restore
+RUN dotnet publish --configuration Release 
 
 # ################################################################
 #                        3ª ETAPA                                #

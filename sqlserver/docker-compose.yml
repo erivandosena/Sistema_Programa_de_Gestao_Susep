@@ -14,7 +14,7 @@ services:
     restart: always
     environment:
       ADM_PASSWORD: Sql@server2019Express
-      SA_PASSWORD: "Sql@server2019"
+      SA_PASSWORD: Sql@server2019
       ACCEPT_EULA: "Y"
       MSSQL_PID: Express
     ports:
@@ -24,13 +24,8 @@ services:
       - ./sql-codes/Script-comandos-sql-sobdemanda.sql:/usr/src/sqlserver-init/sqls/Script-comandos-sql-sobdemanda.sql:rw
     networks:
        - sqlserver
-
-# networks:
-#   sqlserver:
-#     external: true
-#     name: traefik
-
+       
 networks:
- sqlserver:
-   name: sqlserver
-   driver: bridge
+  sqlserver:
+    external: true
+    name: traefik

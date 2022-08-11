@@ -1,58 +1,33 @@
 -- Cria banco de dados se não existir
 IF NOT EXISTS(SELECT case when name is not null then 1 else 0 end from master.sys.databases where name = 'pgd_susep') BEGIN
     CREATE DATABASE pgd_susep
+    CREATE DATABASE pgd_staging
+    CREATE DATABASE pgd_train
 END
 GO
 
 -- Cria login se não existir
 IF NOT EXISTS(SELECT principal_id FROM sys.server_principals WHERE name = 'admin') BEGIN
-    CREATE LOGIN admin WITH PASSWORD = 'Sql@server2019Express'
+    CREATE LOGIN [admin] WITH PASSWORD = 'Sql@server2019Express'
+    -- Função do servidor para conceder ao usuário privilégios de segurança em todo servidor
+    ALTER SERVER ROLE [dbcreator] ADD MEMBER [admin]
+    ALTER SERVER ROLE [serveradmin] ADD MEMBER [admin]
+    ALTER SERVER ROLE [setupadmin] ADD MEMBER [admin]
 END
 GO
 
--- Cria o usuário para o logon especificado
 USE [pgd_susep]
 GO
-IF NOT EXISTS(SELECT principal_id FROM sys.database_principals WHERE name = 'admin') BEGIN
-    CREATE USER admin FOR LOGIN [admin]
-END
+-- Criação e mapeamento do usuário para o logon
+CREATE USER [admin] FOR LOGIN [admin]
 GO
-
-USE [master]
-GO
-
--- Função do servidor para conceder ao usuário privilégios de segurança em todo servidor
-ALTER SERVER ROLE [dbcreator] ADD MEMBER [admin]
-GO
-ALTER SERVER ROLE [serveradmin] ADD MEMBER [admin]
-GO
-ALTER SERVER ROLE [setupadmin] ADD MEMBER [admin]
-GO
-
--- Permissões para o usuário admin
-GRANT ALTER ON LOGIN::[admin] TO [admin] WITH GRANT OPTION
-GO
-GRANT CONTROL ON LOGIN::[admin] TO [admin] WITH GRANT OPTION
-GO
-GRANT VIEW DEFINITION ON LOGIN::[admin] TO [admin] WITH GRANT OPTION
-GO
-GRANT IMPERSONATE ON LOGIN::[admin] TO [admin] WITH GRANT OPTION
-GO
-
--- Banco de dados padrão
-ALTER LOGIN [admin] WITH DEFAULT_DATABASE=[pgd_susep], DEFAULT_LANGUAGE=[Português], CHECK_EXPIRATION=OFF, CHECK_POLICY=ON
-GO
-
--- Associação as funções para o banco de dados
-USE [pgd_susep]
-GO
+-- Associação à função de banco de dados
+ALTER USER [admin] WITH DEFAULT_SCHEMA=[dbo]
 ALTER ROLE [db_backupoperator] ADD MEMBER [admin]
-GO
+ALTER ROLE [db_owner] ADD MEMBER [admin]
 ALTER ROLE [db_datareader] ADD MEMBER [admin]
-GO
 ALTER ROLE [db_datawriter] ADD MEMBER [admin]
 GO
-ALTER ROLE [db_ddladmin] ADD MEMBER [admin]
-GO
-ALTER ROLE [db_owner] ADD MEMBER [admin]
+-- Banco de dados padrão do logon
+ALTER LOGIN [admin] WITH DEFAULT_DATABASE=[pgd_susep], DEFAULT_LANGUAGE=[Português], CHECK_EXPIRATION=OFF, CHECK_POLICY=ON
 GO

@@ -1,4 +1,4 @@
--- Início backup pgd_susep
+-- Início backup pgd_susep (BD produção)
 IF EXISTS(SELECT case when name is not null then 1 else 0 end from master.sys.databases where name = 'pgd_susep') BEGIN
     BACKUP DATABASE [pgd_susep] TO  DISK = N'/var/opt/mssql/data/pgd_susep.bak' WITH  DESCRIPTION = N'Backup após start do container', NOFORMAT, INIT,  NAME = N'pgd_susep-backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
 END
@@ -12,5 +12,3 @@ IF EXISTS(SELECT case when name is not null then 1 else 0 end from master.sys.da
 END
 GO
 -- Fim
-
--- Início backup de outros bancos..

@@ -33,8 +33,9 @@ RUN chmod +x ./*.sh
 
 COPY sql-codes/ ./sqls/
 
-RUN mv -fv ./sqls/change-database.sql ./
 RUN mv -fv ./sqls/create-database.sql ./
+RUN mv -fv ./sqls/backup-database.sql ./
+RUN mv -fv ./sqls/restore-database.sql ./
 
 COPY install/*.sql /usr/src/sqlserver-init/sqls/
 
