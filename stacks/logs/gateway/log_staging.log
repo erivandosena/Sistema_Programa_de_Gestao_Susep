@@ -1,0 +1,31 @@
+2022-08-11 15:17:33.663 +00:00 [WRN] Using an in-memory repository. Keys will not be persisted to storage.
+2022-08-11 15:17:33.737 +00:00 [WRN] Neither user profile nor HKLM registry available. Using an ephemeral key repository. Protected data will be unavailable when application exits.
+2022-08-11 15:17:33.762 +00:00 [WRN] No XML encryptor configured. Key {3fece825-3b04-4078-bf21-764c71da276e} may be persisted to storage in unencrypted form.
+2022-08-11 17:02:26.798 +00:00 [WRN] Failed to determine the https port for redirect.
+2022-08-11 17:02:53.206 +00:00 [WRN] requestId: 0HMJRND2A2I8K:00000002, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:02:55.262 +00:00 [WRN] requestId: 0HMJRND2A2I8K:00000003, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:02:56.193 +00:00 [WRN] requestId: 0HMJRND2A2I8K:00000004, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:03:57.690 +00:00 [WRN] requestId: 0HMJRND2A2I8K:00000006, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:04:30.674 +00:00 [WRN] requestId: 0HMJRND2A2I8K:00000008, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:08:26.676 +00:00 [WRN] Using an in-memory repository. Keys will not be persisted to storage.
+2022-08-11 17:08:26.716 +00:00 [WRN] Neither user profile nor HKLM registry available. Using an ephemeral key repository. Protected data will be unavailable when application exits.
+2022-08-11 17:08:26.740 +00:00 [WRN] No XML encryptor configured. Key {84cd338b-18d6-4c2b-b976-f8c5a6519b47} may be persisted to storage in unencrypted form.
+2022-08-11 17:08:29.372 +00:00 [WRN] Failed to determine the https port for redirect.
+2022-08-11 17:08:46.439 +00:00 [WRN] requestId: 0HMJRNGEC20TN:00000001, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:09:29.147 +00:00 [WRN] requestId: 0HMJRNGEC20TN:00000003, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:09:35.850 +00:00 [WRN] requestId: 0HMJRNGEC20TN:00000004, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:09:36.734 +00:00 [WRN] requestId: 0HMJRNGEC20TN:00000005, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:09:37.295 +00:00 [WRN] requestId: 0HMJRNGEC20TN:00000006, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:09:37.703 +00:00 [WRN] requestId: 0HMJRNGEC20TN:00000007, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:10:03.604 +00:00 [WRN] requestId: 0HMJRNGEC20TN:00000008, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:10:27.252 +00:00 [WRN] Using an in-memory repository. Keys will not be persisted to storage.
+2022-08-11 17:10:27.291 +00:00 [WRN] Neither user profile nor HKLM registry available. Using an ephemeral key repository. Protected data will be unavailable when application exits.
+2022-08-11 17:10:27.312 +00:00 [WRN] No XML encryptor configured. Key {1c10dea4-cbfa-4fdc-b6ac-e7d4297fe503} may be persisted to storage in unencrypted form.
+2022-08-11 17:10:28.555 +00:00 [WRN] Failed to determine the https port for redirect.
+2022-08-11 17:10:51.567 +00:00 [WRN] requestId: 0HMJRNHHSNQ51:00000001, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:12:15.669 +00:00 [WRN] requestId: 0HMJRNHHSNQ51:00000002, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token
+2022-08-11 17:15:20.541 +00:00 [WRN] Using an in-memory repository. Keys will not be persisted to storage.
+2022-08-11 17:15:20.578 +00:00 [WRN] Neither user profile nor HKLM registry available. Using an ephemeral key repository. Protected data will be unavailable when application exits.
+2022-08-11 17:15:20.597 +00:00 [WRN] No XML encryptor configured. Key {7ba7adf6-8405-47aa-afd1-45a14623a68d} may be persisted to storage in unencrypted form.
+2022-08-11 17:17:10.748 +00:00 [WRN] Failed to determine the https port for redirect.
+2022-08-11 17:18:10.491 +00:00 [WRN] requestId: 0HMJRNL9NR2AR:00000002, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-staging/connect/token

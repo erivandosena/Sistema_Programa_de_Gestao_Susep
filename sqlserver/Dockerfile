@@ -4,8 +4,8 @@
 # docker build -t erivando/mssqlserverexpress-2019-ubuntu20:latest .
 #
 # Up do container
-# docker run --name sqlserver2019 --restart=always -p 1433:1433 -d erivando/mssqlserverexpress-2019-ubuntu20:latest
-# 
+# docker run --name sqlserver2019 --restart=always --network=traefik -p 1433:1433 -e 'SA_PASSWORD=Sql@server2019' -e 'ACCEPT_EULA=Y' -e 'MSSQL_PID=Express' -e 'ADM_PASSWORD=Sql@server2019Express' -d erivando/mssqlserverexpress-2019-ubuntu20:latest
+#
 # Obter logs
 # docker logs --details -f sqlserver2019
 #

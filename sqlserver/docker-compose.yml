@@ -15,12 +15,12 @@ services:
     environment:
       ADM_PASSWORD: Sql@server2019Express
       SA_PASSWORD: Sql@server2019
-      ACCEPT_EULA: "Y"
+      ACCEPT_EULA: Y
       MSSQL_PID: Express
     ports:
       - 1433:1433
     volumes:
-      - ./mssql-data:/var/opt/mssql/data
+      # - ./mssql-data:/var/opt/mssql/data:rw # Desomentar esta linha (somente no linux) se desejar acessar os .mdf .ldf .bak 
       - ./sql-codes/Script-comandos-sql-sobdemanda.sql:/usr/src/sqlserver-init/sqls/Script-comandos-sql-sobdemanda.sql:rw
     networks:
        - sqlserver

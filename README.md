@@ -37,13 +37,13 @@ Antes de iniciar, leia as observações.
 
 4 - Acessar o diretório **/stacks**, e provisionar o(s) container(s) PGD conforme necessidade.
 - *Para testes da equipe de TI e homologações com gestores*  
-`$> docker compose -p proj-staging -f docker-compose.staging.yml up -d`  
+`$> docker compose -p pgd-staging -f docker-compose.staging.yml up -d`  
 
 - *Para treinamentos dos usários*  
-`$> docker compose -p proj-train -f docker-compose.treinamento.yml up -d`  
+`$> docker compose -p pgd-train -f docker-compose.treinamento.yml up -d`  
 
 - *Para produção*  
-`$> docker compose -p proj-prod -f docker-compose.producao.yml up -d` 
+`$> docker compose -p pgd-prod -f docker-compose.producao.yml up -d` 
 
 5 - Após alguns minutos aplicação estará disponível  no host conforme protocolo/domain.  
 Ex.: *http://pgd.localhost.staging/*  
@@ -58,9 +58,11 @@ Ex.: *http://pgd.localhost/*
 Ex.: *http://traefik.localhost.dashboard:8080/*
 
 ### Nota
-Os dados informados na implementação relacionados a nomes de domínios, certificados, usuário, senhas, etc. São meramente didáticos e tais informações sensíveis devem ser adaptadas a sua realidade de ambiente e infraestrutura.  
+Os dados informados na implementação relacionados a nomes de domínios, certificados, usuário, senhas, etc. São meramente didáticos e tais informações sensíveis devem ser  adaptadas a sua realidade de ambiente e infraestrutura.  
 
-Não fez parte do escopo desta configuração ferramenta de orquestração para automatização da implantação,  gerenciamento, escala e rede dos containers.
+Não fez parte do escopo desta configuração ferramenta de orquestração para automatização da implantação,  gerenciamento, escala e rede dos containers.  
+
+Para execução desta implementação em ambintes de homologação e/ou produção é necesário ajustar os volumes dos containers conforme infraestrutura de Storages On-premises ou em Cloud.
 
 ### Observações
 Para uma experiência completa do ambiente apresentado, faz necessário alguns ajustes em sua máquina local antes de iniciar os containers:
