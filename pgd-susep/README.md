@@ -22,7 +22,7 @@ erivando@wsl-ubuntu:/home/pgd-susep$ docker build -t erivando/pdg-susep-ubuntu20
 Sending build context to Docker daemon  52.48MB
 Step 1/29 : FROM mcr.microsoft.com/dotnet/aspnet:3.1-focal AS base
  ---> cf271fd64b76
-Step 2/29 : LABEL vendor="SUSEP" maintainer="Erivando Sena<erivandoramos@unilab.edu.br>" description="Programa de Gestão e Desempenho (PGD), Versão SUSEP Docker" version="1.7.x"
+Step 2/29 : LABEL vendor="SUSEP" maintainer="Erivando Sena<erivandosena@gmail.com>" description="Programa de Gestão e Desempenho (PGD), Versão SUSEP Docker" version="1.7.x"
  ---> Using cache
  ---> 8a168e7079b9
 Step 3/29 : RUN apt-get update  && apt-get upgrade -y  && apt-get autoremove -y  && apt-get install -y sudo  && addgroup --group sispg  && adduser --disabled-password --no-create-home --ingroup sispg --gecos '' susep  && chmod 755 /etc/sudoers.d  && usermod -aG sudo susep  && echo 'susep ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers.d/susep  && chmod 440 /etc/sudoers.d/susep  && mkdir /app  && chown -Rf susep:sispg /app
