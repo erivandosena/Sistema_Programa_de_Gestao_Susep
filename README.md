@@ -20,49 +20,49 @@ Traefik com configuração de roteamento dinâmico e configuração de inicializ
 
 Antes de iniciar, leia as observações.
 
-1 - Acessar o diretório **/proxy**, provisionar o container do Proxy com
-`$> docker-compose up -d` e logs com
+1 - Acessar o diretório **/proxy**, provisionar o container do Proxy com  
+`$> docker-compose up -d` e logs com  
 `$> cat logs/traefik/traefik.log`
 
-2 - Acessar o diretório **/pgd-supep**, construir a imagem do pgd e push no registro para pulling da imagem futuramente.
+2 - Acessar o diretório **/pgd-supep**, construir a imagem do pgd e push no registro para pulling da imagem futuramente.  
 `$> docker build -t user_registro/pdg-susep-ubuntu20:latest .`  
 `$> docker push user_registro/pdg-susep-ubuntu20:latest`  
 
-2 - Acessar o diretório **/sqlserver**, construir a imagem do mssqlserver e push no registro para pulling da imagem futuramente.
+2 - Acessar o diretório **/sqlserver**, construir a imagem do mssqlserver e push no registro para pulling da imagem futuramente.  
 `$> docker build -t user_registro/mssqlserverexpress-2019-ubuntu20:latest .`  
 `$> docker push user_registro/mssqlserverexpress-2019-ubuntu20:latest`
 
-3 - Provisionar o container SQLServer. 
+3 - Provisionar o container SQLServer.  
 `$> docker-compose up -d`
 
 4 - Acessar o diretório **/stacks**, e provisionar o(s) container(s) PGD conforme necessidade.
-- *Para testes da equipe de TI e homologações com gestores*
+- *Para testes da equipe de TI e homologações com gestores*  
 `$> docker compose -p proj-staging -f docker-compose.staging.yml up -d`  
 
-- *Para treinamentos dos usários*
+- *Para treinamentos dos usários*  
 `$> docker compose -p proj-train -f docker-compose.treinamento.yml up -d`  
 
-- *Para produção*
+- *Para produção*  
 `$> docker compose -p proj-prod -f docker-compose.producao.yml up -d` 
 
-5 - Após alguns minutos aplicação estará disponível  no host conforme protocolo/domain.
-Ex.: *http://pgd.localhost.staging/*
-Ex.: *http://pgd.localhost.treinamento/*
-Ex.: *http://pgd.localhost/*
+5 - Após alguns minutos aplicação estará disponível  no host conforme protocolo/domain.  
+Ex.: *http://pgd.localhost.staging/*  
+Ex.: *http://pgd.localhost.treinamento/*  
+Ex.: *http://pgd.localhost/*  
 
-6 - Teste inicial.
-*Usuário: sisgp_gestor*
+6 - Teste inicial.  
+*Usuário: sisgp_gestor*  
 *Senha: qualquer caractere*
 
-7 - Dashboard Traefik
+7 - Dashboard Traefik  
 Ex.: *http://traefik.localhost.dashboard:8080/*
 
 ### Nota
-Os dados informados na implementação relacionados a nomes de domínios, certificados, usuário, senhas, etc. São meramente didáticos e tais informações sensíveis devem ser adaptadas a sua realidade de ambiente e infraestrutura.
+Os dados informados na implementação relacionados a nomes de domínios, certificados, usuário, senhas, etc. São meramente didáticos e tais informações sensíveis devem ser adaptadas a sua realidade de ambiente e infraestrutura.  
 
 Não fez parte do escopo desta configuração ferramenta de orquestração para automatização da implantação,  gerenciamento, escala e rede dos containers.
 
-##### Observações
+### Observações
 Para uma experiência completa do ambiente apresentado, faz necessário alguns ajustes em sua máquina local antes de iniciar os containers:
 
 - No Windows editar o arquivo hosts em **`C:\Windows\System32\drivers\etc\hosts`**
