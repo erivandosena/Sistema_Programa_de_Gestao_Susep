@@ -22,4 +22,4 @@ Docker-compose v1 e/ou v2
 
 
 #### Contribuições
-Sugestões de posíveis melhorias no Dockerfile são sempre bem vindas.
+Sugestões de posíveis melhorias no Docker Compose e configurações estática/dinâmica nos YAMLs são bem vindas.
