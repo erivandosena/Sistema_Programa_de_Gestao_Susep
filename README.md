@@ -15,10 +15,11 @@ Docker-compose v1 e/ou v2
 
 #### Implementação da infraestrutura
 
-![Gitlab DTI](https://doc.traefik.io/traefik/assets/img/traefik-concepts-1.png)
+![Traefik V2](https://doc.traefik.io/traefik/assets/img/traefik-concepts-1.png)
 Traefik com configuração de roteamento dinâmico e configuração de inicialização estática. *Fonte imagem, doc.traefik.io*
 
-Antes de iniciar, leia as observações.
+> **Antes de iniciar**, leia as observações.
+Para ambientes Windows segue um [passo a passo para ambientes com Docker Desktop](./PassoAPasso-Windows.md)  
 
 1 - Acessar o diretório **/proxy**, provisionar o container do Proxy com  
 `$> docker-compose up -d` e logs com  
