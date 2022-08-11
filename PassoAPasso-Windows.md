@@ -99,3 +99,6 @@ Senha: *qualquer caractere*
 
 > **Traefik**  
 http://traefik.localhost.dashboard:8080/
+
+##### Contribuições  
+Sugestões de possíveis melhorias neste readme são bem vindas.
