@@ -1,9 +1,9 @@
 # Passo a Passo - Windows 10/11
 
-> **Instalação do Docker Desktop para Windows**
+> **Instalação do Docker Desktop para Windows**  
 Download e instalação: https://www.docker.com/products/docker-desktop/.
 
-> **CMD - Prompt de Comando**
+> **CMD - Prompt de Comando**  
 Clonar o repositório, acessar o diretório `PGD-Docker`, e verificar o conteúdo.
 ```console
 git clone --progress -v "https://github.com/erivandosena/Sistema_Programa_de_Gestao_Susep.git" "PGD-Docker"
@@ -25,7 +25,7 @@ d-----        11/08/2022     11:00                stacks
 -a----        11/08/2022     11:00           1158 LICENSE
 -a----        11/08/2022     11:00           4454 README.md
 ```
-> **Editar o arquivo hosts**
+> **Editar o arquivo hosts**  
 ```console
 start -verb runas notepad C:\Windows\System32\drivers\etc\hosts
 ```
@@ -37,32 +37,32 @@ Adicionar as linhas abaixo e salvar o arquivo.
 127.0.0.1       pgd.localhost.treinamento
 127.0.0.1       traefik.localhost.dashboard
 ```
-> **Build da Imagem PGD** 
+> **Build da Imagem PGD**  
 Criar e taguear a imagem do PDG - Programa de Gestão e Desempenho e verificar os níveis de vulnerabilidades na imagem.
 ```console
 docker build -f .\pgd-susep\Dockerfile -t erivando/pdg-susep-ubuntu20:latest .\pgd-susep\
 
 docker scan --file .\pgd-susep\Dockerfile erivando/pdg-susep-ubuntu20:latest
 ```
-> **Build da Imagem MSSQLSERVER** 
+> **Build da Imagem MSSQLSERVER**  
 Criar e taguear a imagem do SqlServerExpress e verificar os níveis de vulnerabilidades na imagem.
 ```console
 docker build -f .\sqlserver\Dockerfile -t erivando/mssqlserverexpress-2019-ubuntu20:latest .\sqlserver\
 
 docker scan --file .\sqlserver\Dockerfile erivando/mssqlserverexpress-2019-ubuntu20:latest
 ```
-> **Container Traefik** 
+> **Container Traefik**  
 Rodar o container do Traefik
 ```console
 docker-compose -f .\proxy\docker-compose.yml up -d
 ```
-> **Container SQLServer** 
+> **Container SQLServer**  
 Rodar o container do SQLServer Express
 ```console
 docker-compose -f .\sqlserver\docker-compose.yml up -d
 ```
 
-> **Containers PGD - Susep** 
+> **Containers PGD - Susep**  
 Rodar os containers da stack PGD e verificar se os STATUS dos 11 containers estão `running` conforme exemplo abaixo.
 ```console
 docker-compose -p pgd-staging -f .\stacks\docker-compose.staging.yml up -d
@@ -79,23 +79,23 @@ proxy               running(1)          C:\Users\Usuario\PGD-Docker\proxy\docker
 sqlserver           running(1)          C:\Users\Usuario\PGD-Docker\sqlserver\docker-compose.yml
 ```
 
-> **Bancos de Dados**
+> **Bancos de Dados**  
 Realizar a conexão com o servidor `MSqlServer` através do `Microsoft SQL Server Management Studio` e verificar se os bancos `pgd_susep`, `pgd_staging` e `pgd_train` foram criados e suas tabelas.  
 
 Informar os dados do logon confome imagem
 
 ![Microsoft SQL Server Management Studio](./sqlserver/MicrosoftSQLServerManagementStudio.jpg)
 
-> **Acessar o Browser**
+> **Acessar o Browser**  
 Se tudo ocorreu bem, após alguns minutos os serviços estarão disponíveis conforme URLs abaixo:
 
 http://pgd.localhost.staging/  
 http://pgd.localhost.treinamento/  
 http://pgd.localhost/  
 
-> **Acesso de Teste**
+> **Acesso de Teste**  
 Usuário: *sisgp_gestor*  
 Senha: *qualquer caractere*
 
-> **Traefik**
+> **Traefik**  
 http://traefik.localhost.dashboard:8080/
