@@ -1,4 +1,4 @@
-# SUSEP/PGD - Docker
+# PGD/SUSEP - Docker
 
 **Versão atual:** 1.7 (com adaptações a partir do código da branch "docker" em https://github.com/spbgovbr/Sistema_Programa_de_Gestao_Susep/tree/docker)
 
