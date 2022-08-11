@@ -131,4 +131,4 @@ https://hub.docker.com/layers/pdg-susep-ubuntu20/erivando/pdg-susep-ubuntu20/lat
 ```
 
 #### Contribuições
-Sugestões de posíveis melhorias no Dockerfile são sempre bem vindas.
+Sugestões de posíveis melhorias no Dockerfile são bem vindas.
