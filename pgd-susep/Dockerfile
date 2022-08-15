@@ -8,7 +8,7 @@
 
 # Instruções
 ###########################################################
-# docker build -t erivando/pdg-susep-ubuntu20:latest .
+# docker build -t erivando/pdg-susep-ubuntu20-npgsql:latest .
 
 # Créditos e Desenvolvimento
 ###########################################################
@@ -76,8 +76,11 @@ RUN dotnet nuget locals all --list
 RUN dotnet nuget locals all --clear
 RUN dotnet nuget update
 
-# Adicionando referência de pacotes ausentes no projeto
-RUN dotnet add "Susep.SISRH.Domain/Susep.SISRH.Domain.csproj" package Newtonsoft.Json
+# Adicionando referência de pacotes ausentes no(s) projeto(s)
+RUN dotnet add "Susep.SISRH.Domain/Susep.SISRH.Domain.csproj" package Microsoft.AspNetCore.Mvc.NewtonsoftJson --version 3.1.5
+RUN dotnet add "Susep.SISRH.WebApi/Susep.SISRH.WebApi.csproj" package Serilog --version 2.9.0
+RUN dotnet add "Susep.SISRH.WebApi/Susep.SISRH.WebApi.csproj" package Serilog.AspNetCore --version 3.2.0
+RUN dotnet add "Susep.SISRH.WebApi/Susep.SISRH.WebApi.csproj" package Serilog.Sinks.File --version 4.1.0
 
 # Verifica certificados 
 RUN dotnet dev-certs https --clean 
@@ -101,6 +104,6 @@ WORKDIR /app
 USER susep
 # Para obter privilégios de root, no container use: sudo -i
 
-COPY --chown=susep:sispg --from=publication /src/Susep.SISRH.WebApi/bin/Release/netcoreapp3.1/publish /app/api/
-COPY --chown=susep:sispg --from=publication /src/Susep.SISRH.ApiGateway/bin/Release/netcoreapp3.1/publish /app/gateway/
-COPY --chown=susep:sispg --from=publication /src/Susep.SISRH.WebApp/bin/Release/netcoreapp3.1/publish /app/app/
+COPY --chown=susep:sispg --from=publication /src/Susep.SISRH.WebApi/bin/Release/netcoreapp3.1/publish ./api/
+COPY --chown=susep:sispg --from=publication /src/Susep.SISRH.ApiGateway/bin/Release/netcoreapp3.1/publish ./gateway/
+COPY --chown=susep:sispg --from=publication /src/Susep.SISRH.WebApp/bin/Release/netcoreapp3.1/publish ./app/

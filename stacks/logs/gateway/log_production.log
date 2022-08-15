@@ -1,7 +1,0 @@
-2022-08-11 15:19:14.230 +00:00 [WRN] Using an in-memory repository. Keys will not be persisted to storage.
-2022-08-11 15:19:14.269 +00:00 [WRN] Neither user profile nor HKLM registry available. Using an ephemeral key repository. Protected data will be unavailable when application exits.
-2022-08-11 15:19:14.289 +00:00 [WRN] No XML encryptor configured. Key {38b3ef63-fe7e-4742-9441-04b4cd024b9e} may be persisted to storage in unencrypted form.
-2022-08-11 17:15:43.340 +00:00 [WRN] Using an in-memory repository. Keys will not be persisted to storage.
-2022-08-11 17:15:43.429 +00:00 [WRN] Neither user profile nor HKLM registry available. Using an ephemeral key repository. Protected data will be unavailable when application exits.
-2022-08-11 17:15:43.457 +00:00 [WRN] No XML encryptor configured. Key {c1fc403a-bca3-4d83-8bfa-ffb6ac462f63} may be persisted to storage in unencrypted form.
-2022-08-11 17:30:56.733 +00:00 [WRN] Failed to determine the https port for redirect.

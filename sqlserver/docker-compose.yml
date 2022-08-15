@@ -8,11 +8,11 @@ version: "3.9"
 services:
   # Sql Server Express
   mssqlserver:
-    #image: erivando/mssqlserverexpress-2019-ubuntu20:latest
     image: erivando/mssqlserverexpress-2019-ubuntu20:latest
     container_name: sqlserver_service
     restart: always
     environment:
+      TZ: America/Fortaleza
       ADM_PASSWORD: Sql@server2019Express
       SA_PASSWORD: Sql@server2019
       ACCEPT_EULA: Y
@@ -20,7 +20,7 @@ services:
     ports:
       - 1433:1433
     volumes:
-      # - ./mssql-data:/var/opt/mssql/data:rw # Desomentar esta linha (somente no linux) se desejar acessar os .mdf .ldf .bak 
+      # - ./mssql-data:/var/opt/mssql/data:rw # Descomentar esta linha (somente no linux) se desejar acessar os .mdf .ldf .bak 
       - ./sql-codes/Script-comandos-sql-sobdemanda.sql:/usr/src/sqlserver-init/sqls/Script-comandos-sql-sobdemanda.sql:rw
     networks:
        - sqlserver

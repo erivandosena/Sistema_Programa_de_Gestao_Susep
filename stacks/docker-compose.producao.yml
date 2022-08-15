@@ -16,6 +16,7 @@ services:
       - ./config/api/Settings/production:/app/api/Settings:ro
       - ./logs/api/log_production.log:/app/api/Logs/log.txt:rw
     environment:
+      - TZ=America/Fortaleza
       - ASPNETCORE_ENVIRONMENT=Homolog
       # Email
       - emailOptions__EmailRemetente=teletrabalho@noreply.domainorgao.edu.br
@@ -47,6 +48,7 @@ services:
       - ./config/gateway/Settings/production:/app/gateway/Settings:ro
       - ./logs/gateway/log_production.log:/app/gateway/Logs/log.txt:rw
     environment:
+      - TZ=America/Fortaleza
       - ASPNETCORE_ENVIRONMENT=Homolog
     networks:
       - pgd
@@ -62,6 +64,8 @@ services:
     working_dir: /app/app/
     volumes:
       - ./config/app/production/env.js:/app/app/ClientApp/dist/env.js:ro
+    environment:
+      - TZ=America/Fortaleza
     networks:
       - pgd
     depends_on:

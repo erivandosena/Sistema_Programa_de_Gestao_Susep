@@ -25,6 +25,8 @@ services:
       - ./config/traefik/regras:/etc/traefik/rules:ro
       # Ssl
       - ./config/traefik/certs:/etc/certs
+    environment:
+      - TZ=America/Fortaleza
     networks:
       - traefik
       

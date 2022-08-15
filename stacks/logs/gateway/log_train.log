@@ -1,9 +1,0 @@
-2022-08-11 15:18:32.952 +00:00 [WRN] Using an in-memory repository. Keys will not be persisted to storage.
-2022-08-11 15:18:32.988 +00:00 [WRN] Neither user profile nor HKLM registry available. Using an ephemeral key repository. Protected data will be unavailable when application exits.
-2022-08-11 15:18:33.008 +00:00 [WRN] No XML encryptor configured. Key {26be0c7d-e790-4a37-94b5-ea60d81c00b9} may be persisted to storage in unencrypted form.
-2022-08-11 17:15:33.736 +00:00 [WRN] Using an in-memory repository. Keys will not be persisted to storage.
-2022-08-11 17:15:33.777 +00:00 [WRN] Neither user profile nor HKLM registry available. Using an ephemeral key repository. Protected data will be unavailable when application exits.
-2022-08-11 17:15:33.891 +00:00 [WRN] No XML encryptor configured. Key {b45126af-5288-4848-a4f5-61c8feddab9d} may be persisted to storage in unencrypted form.
-2022-08-11 17:31:29.516 +00:00 [WRN] Failed to determine the https port for redirect.
-2022-08-11 17:48:34.363 +00:00 [WRN] requestId: 0HMJRNT9LNH82:00000002, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-train/connect/token
-2022-08-11 17:49:19.069 +00:00 [WRN] requestId: 0HMJRNT9LNH82:00000003, previousRequestId: no previous request id, message: 500 (Internal Server Error) status code, request uri: http://api-train/connect/token
