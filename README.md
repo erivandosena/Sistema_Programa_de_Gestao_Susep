@@ -29,14 +29,14 @@ Para ambientes Windows segue um [passo a passo para ambientes com Docker Desktop
 `$> docker build -t user_registro/pdg-susep-ubuntu20:latest .`  
 `$> docker push user_registro/pdg-susep-ubuntu20:latest`  
 
-2 - Acessar o diretório **/sqlserver**, construir a imagem do mssqlserver e push no registro para pulling da imagem futuramente.  
+3 - Acessar o diretório **/sqlserver**, construir a imagem do mssqlserver e push no registro para pulling da imagem futuramente.  
 `$> docker build -t user_registro/mssqlserverexpress-2019-ubuntu20:latest .`  
 `$> docker push user_registro/mssqlserverexpress-2019-ubuntu20:latest`
 
-3 - Provisionar o container SQLServer.  
+4 - Provisionar o container SQLServer.  
 `$> docker-compose up -d`
 
-4 - Acessar o diretório **/stacks**, e provisionar o(s) container(s) PGD conforme necessidade.
+5 - Acessar o diretório **/stacks**, e provisionar o(s) container(s) PGD conforme necessidade.
 - *Para testes da equipe de TI e homologações com gestores*  
 `$> docker compose -p pgd-staging -f docker-compose.staging.yml up -d`  
 
@@ -46,16 +46,16 @@ Para ambientes Windows segue um [passo a passo para ambientes com Docker Desktop
 - *Para produção*  
 `$> docker compose -p pgd-prod -f docker-compose.producao.yml up -d` 
 
-5 - Após alguns minutos aplicação estará disponível  no host conforme protocolo/domain.  
+6 - Após alguns minutos aplicação estará disponível  no host conforme protocolo/domain.  
 Ex.: *http://pgd.localhost.staging/*  
 Ex.: *http://pgd.localhost.treinamento/*  
 Ex.: *http://pgd.localhost/*  
 
-6 - Teste inicial.  
+7 - Teste inicial.  
 *Usuário: sisgp_gestor*  
 *Senha: qualquer caractere*
 
-7 - Dashboard Traefik  
+8 - Dashboard Traefik  
 Ex.: *http://traefik.localhost.dashboard:8080/*
 
 ### Nota
