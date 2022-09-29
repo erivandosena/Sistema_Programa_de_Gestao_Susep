@@ -39,7 +39,7 @@ Adicionar as linhas abaixo e salvar o arquivo.
 127.0.0.1       traefik.localhost.dashboard
 ```
 > **Build da Imagem PGD**  
-Criar e taguear a imagem do PDG - Programa de Gestão e Desempenho e verificar os níveis de vulnerabilidades na imagem.
+Criar e taguear a imagem do PDG - Programa de Gestão e Desempenho e verificar os níveis de vulnerabilidades na imagem.  
 Observação: Substituir "**erivando**"/pdg-susep-ubuntu20:latest por seu nome de conta no Docker Hub.
 ```console
 docker build -f .\pgd-susep\Dockerfile -t erivando/pdg-susep-ubuntu20:latest .\pgd-susep\
