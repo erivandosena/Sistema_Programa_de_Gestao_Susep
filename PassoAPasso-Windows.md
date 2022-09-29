@@ -3,7 +3,7 @@
 > **Instalação do Docker Desktop para Windows**  
 Download e instalação: https://www.docker.com/products/docker-desktop/.
 
-> **CMD - Prompt de Comando**  
+> **CMD - Prompt de Comando do Windows PowerShell**  
 Clonar o repositório, acessar o diretório `PGD-Docker`, e verificar o conteúdo.
 ```console
 git clone --progress -v "https://github.com/erivandosena/Sistema_Programa_de_Gestao_Susep.git" "PGD-Docker"
