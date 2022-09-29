@@ -17,13 +17,14 @@ Diretório: C:\Users\Usuario\PGD-Docker
 
 Mode                 LastWriteTime         Length Name
 ----                 -------------         ------ ----
-d-----        11/08/2022     11:00                pgd-susep
-d-----        11/08/2022     11:00                proxy
-d-----        11/08/2022     11:00                sqlserver
-d-----        11/08/2022     11:00                stacks
--a----        11/08/2022     11:00           8382 .gitignore
--a----        11/08/2022     11:00           1158 LICENSE
--a----        11/08/2022     11:00           4454 README.md
+d-----        29/09/2022     11:21                pgd-susep
+d-----        29/09/2022     11:21                proxy
+d-----        29/09/2022     11:21                sqlserver
+d-----        29/09/2022     11:21                stacks
+-a----        29/09/2022     11:21           8382 .gitignore
+-a----        29/09/2022     11:21           1158 LICENSE
+-a----        29/09/2022     11:21           4175 PassoAPasso-Windows.md
+-a----        29/09/2022     11:21           4766 README.md
 ```
 > **Editar o arquivo hosts**  
 ```console
