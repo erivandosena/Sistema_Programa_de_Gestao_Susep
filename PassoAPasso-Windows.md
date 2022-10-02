@@ -97,6 +97,10 @@ http://pgd.localhost/
 
 > **Acesso de Teste**  
 Usuário: *sisgp_gestor*  
+         *sisgp_cg*  
+         *sisgp_coordenador*  
+         *sisgp_diretor*  
+         *sisgp_servidor*  
 Senha: *qualquer caractere*
 
 > **Traefik**  
