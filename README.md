@@ -166,6 +166,3 @@ Acessar o diretório **`/Deploy-PGD_Kubernetes_HAProxy`**
 kubectl apply -f https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/master/deploy/haproxy-ingress.yaml
 
 ```
-
-#### Contribuições
-Sugestões de possíveis melhorias no Dockerfile, Docker Compose e Traefik são bem vindas.
