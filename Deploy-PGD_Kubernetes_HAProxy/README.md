@@ -18,7 +18,7 @@ HAProxy Kubernetes Ingress Controller
 ##### Deployments YAML para provisionamento do PGD em PostgreSQL e/ou SQL Server Express no Kubernetes
 
 `$> kubectl apply -f pgd-postgres-deployment.yml`  
-`$> kubectl apply -f postgres-deployment.yml` 
+`$> kubectl apply -f postgres-deployment.yml`  
 `$> kubectl apply -f pgadmin-deployment.yml` (Opcional conforme necessidade)  
 
 ### Observação:  
