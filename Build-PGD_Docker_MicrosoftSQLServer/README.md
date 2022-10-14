@@ -20,7 +20,7 @@ Docker-compose v1 e/ou v2
 
 #### Execução do Build da Imagem do PGD para SQL Server Express  
 
-`$> docker build -t erivando/pdg-susep-ubuntu20-mssqlserver:latest .  
+`$> docker build -t erivando/pdg-susep-ubuntu20-mssqlserver:latest .`  
 `$> docker push SEU-USER/pdg-susep-ubuntu20-mssqlserver:latest` (Opcional no momento)  
 
 ##### Compose para provisionamento do SQL Server Express  
