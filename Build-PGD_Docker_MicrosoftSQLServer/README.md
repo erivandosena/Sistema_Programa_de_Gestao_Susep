@@ -26,4 +26,3 @@ Docker-compose v1 e/ou v2
 ##### Compose para provisionamento do SQL Server Express  
 
 `$> docker-compose up -d`  
-```
