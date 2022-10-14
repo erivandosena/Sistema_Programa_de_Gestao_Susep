@@ -27,6 +27,3 @@ Docker-compose v1 e/ou v2
 
 `$> docker-compose up -d`  
 ```
-
-#### Contribuições
-Sugestões de posíveis melhorias no Dockerfile são bem vindas.
