@@ -23,6 +23,3 @@ HAProxy Kubernetes Ingress Controller
 
 ### Observação:  
 A construção do cluster Kubernetes e configuração do HAProxy Kubernetes Ingress Controller estão fora do escopo deste ambiente de instrução.  
-
-#### Contribuições  
-Sugestões de posíveis melhorias no Docker Compose e configurações estática/dinâmica nos YAMLs são bem vindas.
