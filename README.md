@@ -4,17 +4,17 @@
 
 #### Requisitos do ambiente para o build e deploy dos serviços
 
-**Em Linux (Ubuntu/Debian):**
+**Em Linux (Ubuntu/Debian):**  
 Docker  
-Docker-compose v1 e/ou v2
-Kubernetes
-HAProxy Kubernetes Ingress Controller 
+Docker-compose v1 e/ou v2  
+Kubernetes  
+HAProxy Kubernetes Ingress Controller  
 
-**Em Windows:** 
+**Em Windows:**  
 WSL/2 (Ubuntu/Debian)  
-Docker  
-Docker-compose v1 e/ou v2
-Kubernetes (Minikube, K3s, etc)
+Docker   
+Docker-compose v1 e/ou v2  
+Kubernetes (Minikube, K3s, etc)  
 HAProxy Kubernetes Ingress Controller  
 
 ##### Nota
