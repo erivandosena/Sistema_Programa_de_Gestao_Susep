@@ -19,7 +19,3 @@ Docker-compose v1 e/ou v2
 
 #### Logs
 `$> docker-compose logs -f`
-
-
-#### Contribuições
-Sugestões de posíveis melhorias no Docker Compose e configurações estática/dinâmica nos YAMLs são bem vindas.
