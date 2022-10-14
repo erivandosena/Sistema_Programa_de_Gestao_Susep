@@ -1,0 +1,59 @@
+# docker-compose -f .\docker-compose.yml up -d
+# docker exec -it postgresql /bin/bash
+# psql -U postgres
+# SHOW config_file;
+# SHOW pg_hba.conf;
+# docker cp postgresql:/opt/bitnami/postgresql/conf/postgresql.conf ./postgresql/postgresql.conf
+# docker cp postgresql:/opt/bitnami/postgresql/conf/pg_hba.conf ./postgresql/pg_hba.conf
+
+version: '3.9'
+services:
+  ###################################
+  # PostgreSQL
+  ###################################
+  postgresql:
+    image: bitnami/postgresql:latest
+    container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      - ./sql-codes:/docker-entrypoint-initdb.d/sqls:ro
+      - ./config/postgresql.conf:/opt/bitnami/postgresql/conf/postgresql.conf
+      - ./config/pg_hba.conf:/opt/bitnami/postgresql/conf/pg_hba.conf
+      - ./config/create-multiple-postgres-db.sh:/docker-entrypoint-initdb.d/create-multiple-postgres-db.sh:ro
+    networks:
+      - sgbd
+
+  ###################################
+  # PgAdmin4 - Tool para PostgreSQL
+  ###################################
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - 8099:80
+    env_file:
+      - ./pgadmin/.env
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json
+    depends_on:
+      - postgresql
+    networks:
+      - sgbd
+
+volumes:
+  postgresql_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  sgbd:
+    external: true
+    name: traefik

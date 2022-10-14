@@ -1,0 +1,133 @@
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pgadmin
+
+---
+# echo -n <STRING-VALUE> | base64
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pgadmin-secrets
+  namespace: pgadmin
+type: Opaque
+data:
+  PGADMIN_DEFAULT_PASSWORD: YWRtaW4xMjM0
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgadmin-config
+  namespace: pgadmin
+  labels:
+    app: pgadmin
+data:
+  # Default
+  TZ: "America/Fortaleza"
+  PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  MAX_LOGIN_ATTEMPTS: "6"
+  servers.json: |
+    {
+        "Servers":{
+          "1":{
+              "Name":"Databases PGD PostgresSQL",
+              "Group":"Servers",
+              "Port":5432,
+              "Username":"postgresql",
+              "Host":"localhost",
+              "SSLMode":"prefer",
+              "MaintenanceDB":"pgd_staging"
+          }
+        }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin
+  namespace: pgadmin
+  labels:
+    app: pgadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+    spec:
+      containers:
+        - name: pgadmin
+          image: dpage/pgadmin4:latest
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: pgadmin-secrets
+            - configMapRef:
+                name: pgadmin-config
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          volumeMounts:
+            - name: servers-conf
+              mountPath: /pgadmin4/servers.json
+              subPath: servers.json
+              readOnly: false
+            - name: pgadmin-data
+              mountPath: /var/lib/pgadmin
+      volumes:
+        - name: servers-conf
+          configMap:
+            name: pgadmin-config
+        - name: pgadmin-data
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin
+  labels:
+    app: pgadmin
+  namespace: pgadmin
+spec:
+  selector:
+     app: pgadmin
+  ports:
+    - protocol: TCP
+      port: 80
+      nodePort: 30122
+    
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pgadmin
+  namespace: pgadmin
+  annotations:
+    haproxy.org/check: "enabled"
+    haproxy.org/forwarded-for: "enabled"
+    haproxy.org/load-balance: "roundrobin"
+    haproxy.org/ssl-redirect: "true"
+    haproxy.org/ssl-redirect-code: "301"
+spec:
+  rules:
+    - host: pgadmin.IP-LoadBalancer.nip.io
+      http: 
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: pgadmin
+                port:
+                  number: 80

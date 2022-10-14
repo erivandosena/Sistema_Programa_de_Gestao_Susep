@@ -1,7 +1,0 @@
-.gitignore
-.dockerignore
-README.md
-LICENSE
-docker-compose.yml
-/config
-/logs

@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  susep.sisrh.webapp:
+    image: ${DOCKER_REGISTRY-}susepsisrhwebapp
+    build:
+      context: .
+      dockerfile: Susep.SISRH.WebApp/Dockerfile
+
+  susep.sisrh.apigateway:
+    image: ${DOCKER_REGISTRY-}susepsisrhapigateway
+    build:
+      context: .
+      dockerfile: Susep.SISRH.ApiGateway/Dockerfile
+
+  susep.sisrh.webapi:
+    image: ${DOCKER_REGISTRY-}susepsisrhwebapi
+    build:
+      context: .
+      dockerfile: Susep.SISRH.WebApi/Dockerfile
+

@@ -1,0 +1,14 @@
+{
+    "Servers":{
+       "1":{
+          "Name":"Databases PGD PostgresSQL",
+          "Group":"Servers",
+          "Port":5432,
+          "Username":"pgd",
+          "Host":"postgresql",
+          "SSLMode":"prefer",
+          "MaintenanceDB":"pgd_staging"
+      }
+    }
+ }
+ 

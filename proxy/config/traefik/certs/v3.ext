@@ -1,7 +1,0 @@
-subjectKeyIdentifier   = hash
-authorityKeyIdentifier = keyid:always,issuer:always
-basicConstraints       = CA:TRUE
-keyUsage               = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment, keyAgreement, keyCertSign
-extendedKeyUsage       = serverAuth, clientAuth
-subjectAltName         = DNS:localhost, DNS:traefik.localhost.dashboard
-issuerAltName          = issuer:copy

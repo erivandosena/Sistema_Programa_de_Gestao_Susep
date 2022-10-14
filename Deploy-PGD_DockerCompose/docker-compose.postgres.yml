@@ -1,0 +1,82 @@
+# by: Erivando Sena | DevOps/SRE | UNILAB
+# docker compose -p pgd-docker-postgres -f docker-compose.postgres.yml up -d
+# docker compose -p pgd-docker-postgres -f docker-compose.postgres.yml up -d (Compose V2.x)
+
+version: "3.9"
+
+services:
+  # api
+  api-postgres:
+    image: erivando/pdg-susep-ubuntu20-postgres:latest
+    container_name: api_service_postgres
+    restart: always
+    working_dir: /opt/pgd/api/
+    command: dotnet Susep.SISRH.WebApi.dll
+    volumes:
+      - ./config/api/Settings/postgres:/opt/pgd/api/Settings:ro
+      - ./logs/api/log_pgd_postgres.log:/opt/pgd/api/Logs/log.txt:rw
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - TZ=America/Fortaleza
+      - ASPNETCORE_ENVIRONMENT=Homolog
+      # Email
+      - emailOptions__EmailRemetente=teletrabalho@noreply.domainorgao.edu.br
+      - emailOptions__NomeRemetente=Programa de Gestão - Susep
+      - emailOptions__SmtpServer=smtp.noreply.domainorgao.edu.br
+      - emailOptions__Port=25
+      # Ldap
+      - ldapOptions__Configurations__0__Url=xxxxxx
+      - ldapOptions__Configurations__0__Port=xxxxxx
+      - ldapOptions__Configurations__0__BindDN=xxxxxx
+      - ldapOptions__Configurations__0__BindPassword=xxxxxx
+      - ldapOptions__Configurations__0__SearchBaseDC=xxxxxx
+      - ldapOptions__Configurations__0__SearchFilter=xxxxxx
+      - ldapOptions__Configurations__0__CpfAttributeFilter=xxxxxx
+      - ldapOptions__Configurations__0__EmailAttributeFilter=xxxxxx
+      # Database
+      - ConnectionStrings__DefaultConnection=Host=postgresql;Port=5432;Database=pgd_staging;Username=pgd;Password=postgres
+    networks:
+      - pgd
+
+  # gateway
+  gateway-postgres:
+    image: erivando/pdg-susep-ubuntu20-postgres:latest
+    container_name: gateway_service_postgres
+    restart: always
+    working_dir: /opt/pgd/gateway/
+    command: dotnet Susep.SISRH.ApiGateway.dll
+    volumes:
+      - ./config/gateway/Settings/postgres:/opt/pgd/gateway/Settings:ro
+      - ./logs/gateway/log_pgd_postgres.log:/opt/pgd/gateway/Logs/log.txt:rw
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - TZ=America/Fortaleza
+      - ASPNETCORE_ENVIRONMENT=Homolog
+    networks:
+      - pgd
+    depends_on:
+      - api-postgres
+
+  # app
+  app-postgres:
+    image: erivando/pdg-susep-ubuntu20-postgres:latest
+    container_name: app_service_postgres
+    restart: always
+    working_dir: /opt/pgd/app/    
+    command: dotnet Susep.SISRH.WebApp.dll
+    volumes:
+      - ./config/app/postgres/env.js:/opt/pgd/app/ClientApp/dist/env.js:ro
+    environment:
+      #- ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - TZ=America/Fortaleza
+    networks:
+      - pgd
+    depends_on:
+      - api-postgres
+      - gateway-postgres
+
+networks:
+  pgd:
+    external: true
+    name: traefik

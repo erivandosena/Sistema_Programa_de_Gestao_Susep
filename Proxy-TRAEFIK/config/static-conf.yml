@@ -1,0 +1,80 @@
+## Static Configuration
+# Erivando Sena | DevOps/SRE | UNILAB
+# static-conf.yml
+
+# https://ssl-config.mozilla.org/#server=traefik&version=2.1.2&config=intermediate&guideline=5.6
+# https://www.convertsimple.com/convert-toml-to-yaml/
+# https://www.bookstack.cn/read/traefik-2.7-en/
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+
+entryPoints:
+  web:
+    address: :80
+    # http:
+    #   redirections:
+    #     entrypoint:
+    #       to: websecure
+    #       scheme: https
+    
+  websecure:
+    address: :443
+    http:
+      middlewares:
+        - serverHeader@file
+
+  admin:
+    address: :8080
+
+  metrics:
+    address: :8082 # 8081 em caso de erros
+
+api:
+  dashboard: true
+  insecure: false
+  debug: true
+
+providers:
+  docker:
+    endpoint: unix:///var/run/docker.sock
+    exposedByDefault: false
+    watch: true
+    network: traefik
+  file:
+    directory: /etc/traefik
+    watch: true
+
+tracing:
+  elastic: {}
+
+experimental:
+  hub: true
+
+hub:
+  tls:
+    insecure: true
+
+metrics:
+  prometheus:
+    addRoutersLabels: true
+    entryPoint: metrics
+
+accessLog: {}
+
+log:
+  level: INFO # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
+  filePath: /etc/traefik/log/traefik.log
+  format: common # json
+
+# certificatesResolvers:
+#   default:
+#     acme:
+#       storage: /acme/acme.json
+#       email: erivando@bol.com.br
+#       caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+#       certificatesDuration: 1560
+#       #tlsChallenge: {}
+#       httpChallenge:
+#         entryPoint: web

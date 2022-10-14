@@ -1,0 +1,7 @@
+.gitignore
+.env
+README.md
+LICENSE
+/config
+/sql-codes
+/pgadmin

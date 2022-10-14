@@ -1,9 +1,0 @@
-LICENSE
-README.md
-.gitignore
-.gitattributes
-.dockerignore
-Dockerfile
-docker-compose.yml
-MicrosoftSQLServerManagementStudio.jpg
-/mssql-data

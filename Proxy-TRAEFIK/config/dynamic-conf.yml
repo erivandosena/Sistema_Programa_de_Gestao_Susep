@@ -1,0 +1,195 @@
+## Dynamic Configuration
+# Erivando Sena | DevOps/SRE | UNILAB
+# dynamic-conf.yml
+
+http:
+  ################################################
+  # ROUTERS
+  ################################################
+  routers:
+    # PGD for MSSQLServer
+    api-sqlserver:
+      entrypoints:
+        - web
+      service: api-sqlserver_file
+      rule: Host(`{{env "DOMAINNAME_PGD_SQLSERVER"}}`)
+
+    app-sqlserver:
+      entrypoints:
+        - web
+      middlewares:
+        - app_stripprefix
+      service: app-sqlserver_file
+      rule: Host(`{{env "DOMAINNAME_PGD_SQLSERVER"}}`) && PathPrefix(`/`)
+
+    gateway-sqlserver:
+      entrypoints:
+        - web
+      middlewares:
+        - gateway_stripprefix
+      service: gateway-sqlserver_file
+      rule: Host(`{{env "DOMAINNAME_PGD_SQLSERVER"}}`) && PathPrefix(`/gateway`)
+
+    # PGD for PostgreSQL
+    api-postgres:
+      entrypoints:
+        - web
+      service: api-postgres_file
+      rule: Host(`{{env "DOMAINNAME_PGD_POSTGRES"}}`)
+
+    app-postgres:
+      entrypoints:
+        - web
+      middlewares:
+        - app_stripprefix
+      service: app-postgres_file
+      rule: Host(`{{env "DOMAINNAME_PGD_POSTGRES"}}`) && PathPrefix(`/`)
+
+    gateway-postgres:
+      entrypoints:
+        - web
+      middlewares:
+        - gateway_stripprefix
+      service: gateway-postgres_file
+      rule: Host(`{{env "DOMAINNAME_PGD_POSTGRES"}}`) && PathPrefix(`/gateway`)
+      
+    # Api Traefik
+    dashboard:
+      rule: Host(`{{env "DOMAINNAME_DASHBOARD_TRAEFIK"}}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      service: api@internal
+      middlewares:
+        - auth
+
+  ################################################
+  # SERVICES
+  ################################################
+  services:
+    # PGD for MSSQLServer
+    api-sqlserver_file:
+      loadBalancer:
+        servers:
+        - url: http://api-sqlserver/
+        passHostHeader: false
+
+    app-sqlserver_file:
+      loadBalancer:
+        servers:
+        - url: http://app-sqlserver/
+        passHostHeader: false
+
+    gateway-sqlserver_file:
+      loadBalancer:
+        servers:
+        - url: http://gateway-sqlserver/
+        passHostHeader: false
+
+    # PGD for PostgreSQL
+    api-postgres_file:
+      loadBalancer:
+        servers:
+        - url: http://api-postgres/
+        passHostHeader: false
+
+    app-postgres_file:
+      loadBalancer:
+        servers:
+        - url: http://app-postgres/
+        passHostHeader: false
+
+    gateway-postgres_file:
+      loadBalancer:
+        servers:
+        - url: http://gateway-postgres/
+        passHostHeader: false
+        
+  ################################################
+  # MIDDLEWARES
+  ################################################
+  middlewares:
+    # traefik
+    auth:
+      basicAuth:
+        users:
+          - "test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/"
+          - "test2:$apr1$d9hr9HBB$4HxwgUir3HP4EsggP/QNo0"
+
+    # prefix gateway (pgd-sqlserver/pgd-postgres)
+    gateway_stripprefix:
+      stripPrefix:
+        prefixes:
+          - "/gateway/"
+    # prefix app (pgd-sqlserver/pgd-postgres)
+    app_stripprefix:
+      stripPrefix:
+        prefixes:
+          - "/safe/sisgp/programagestao/app/"
+
+    serverHeader:
+      headers:
+        # CSP Headers
+        sslRedirect: false
+        # X-Frame-Options: DENY
+        frameDeny: true
+        accessControlAllowMethods:
+          - GET
+          - OPTIONS
+          - PUT
+        #accessControlAllowOrigin: "origin-list-or-null"
+        # accessControlAllowOriginList:
+        accessControlMaxAge: 100
+        contentSecurityPolicy: |
+          default-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'
+        # Vary: Origin
+        addVaryHeader: true
+        # X-XSS-Protection: 1; mode=block
+        browserXssFilter: true
+        # X-Content-Type-Options: nosniff
+        contentTypeNosniff: true
+        # HSTS Headers
+        # Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        # Referrer-Policy: same-origin
+        referrerPolicy: 'same-origin'
+        customFrameOptionsValue: "SAMEORIGIN"
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS13
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+        - TLS_AES_128_GCM_SHA256
+        - TLS_AES_256_GCM_SHA384
+        - TLS_CHACHA20_POLY1305_SHA256
+        - TLS_FALLBACK_SCSV
+    curvePreferences:
+      - CurveP521
+      - CurveP384
+    sniStrict: false
+
+  # # Especificando certificado que será usado para solicitações correspondentes
+  # certificates:
+  #   - certFile: /certs/tls.crt
+  #     keyFile: /certs/tls.key
+  #     stores:
+  #       - default
+
+  # # # Especificando o certificado padrão
+  # # stores:
+  # #   default:
+  # #     defaultCertificate:
+  # #       certFile: /certs/tls-cert.pem
+  # #       keyFile: /certs/tls-key.pem

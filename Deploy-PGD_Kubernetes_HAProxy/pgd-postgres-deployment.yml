@@ -1,0 +1,2459 @@
+---
+# kubectl exec -n pgd <POD> -it -- bash
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pgd-postgres
+  labels:
+    name: pgd-postgres
+
+---
+# echo '<STRING-VALUE>' | base64
+# echo <STRING-VALUE> | base64 -d (verificacao)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pgd-secrets-postgres
+  namespace: pgd-postgres
+type: Opaque
+data:
+  # Ldap
+  ldapOptions__Configurations__0__BindPassword: eHh4eHh4eA==
+  # Database
+  ConnectionStrings__DefaultConnection: SG9zdD0xMjcuMC4wLjE7UG9ydD01NDMyO0RhdGFiYXNlPXBnZF9zdGFnaW5nO1VzZXJuYW1lPWFkbWluO1Bhc3N3b3JkPXBvc3RncmVz
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgd-config-postgres
+  namespace: pgd-postgres
+data:
+  # Default
+  TZ: "America/Fortaleza"
+  # Webmail
+  emailOptions__EmailRemetente: "teletrabalho@noreply.domainorgao.edu.br"
+  emailOptions__NomeRemetente: "Programa de Gestão - Susep"
+  emailOptions__SmtpServer: "smtp.noreply.domainorgao.edu.br"
+  emailOptions__Port: "25"
+  # Ldap
+  ldapOptions__Configurations__0__Url: "xxxxxx"
+  ldapOptions__Configurations__0__Port: "389"
+  ldapOptions__Configurations__0__BindDN: "xxxxxx"
+  ldapOptions__Configurations__0__SearchBaseDC: "xxxxxx"
+  ldapOptions__Configurations__0__SearchFilter: "xxxxxx"
+  ldapOptions__Configurations__0__CpfAttributeFilter: "xxxxxx"
+  ldapOptions__Configurations__0__EmailAttributeFilter: "xxxxxx"
+
+  # Arquivos de configuração | APP
+  env.js: |
+    (function (window) {
+        window.__env = window.__env || {};
+        window.__env.identityUrl = "https://pgd.localhost.psql/gateway",
+        window.__env.apiGatewayUrl = "https://pgd.localhost.psql/gateway",
+        window.__env.modo = "normal", // "avancado",
+        window.__env.client = {
+            id: "SISGP.Web",
+            secret: 'secret',
+            scope: "SISGP.ProgramaGestao"
+        }
+    }(this));
+
+  # Arquivos de configuração | API
+  connectionstrings.Homolog.json: |
+    {
+      "ConnectionStrings": {
+        "DefaultConnection": "Host=<POSTGRESQLSERVER>;Port=5432;Database=<NOME-BD>;Username=<NOME-USER>;Password=<SENHA-USER>;"
+      }
+    }
+
+  appsettings-api.Homolog.json: |
+    {
+      "Serilog": {
+        "Using": [ "Serilog.Sinks.File" ],
+        "MinimumLevel": {
+          "Default": "Warning",
+          "Override": {
+            "Microsoft": "Warning"
+          }
+        },
+        "WriteTo": [
+          {
+            "Name": "File",
+            "Args": { "path": "Logs/log.txt" }
+          }
+        ],
+        "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ]
+      },
+      "emailOptions": {
+        "EmailRemetente": "",
+        "NomeRemetente": "",
+        "SmtpServer": "",
+        "Port": "25"
+      },
+      "ldapOptions": {
+        "Configurations": [
+          {
+            "Url": "",
+            "Port": 389,
+            "BindDN": "", 
+            "BindPassword": "",
+            "SearchBaseDC": "", 
+            "SearchFilter": "", 
+            "CpfAttributeFilter": "",
+            "EmailAttributeFilter": ""
+          }
+        ]
+      },
+      "padroesOptions": {
+
+        "EnderecoPublicacaoFront": "http://pgd-app-postgres/",
+
+        "Notificacoes": {
+          "EnviarEmail": true,
+          "AberturaFaseHabilitacao": "IncluirSubunidades",
+
+          "EmailPlanoParaAprovacao": {
+            "Assunto": "[Programa de gestão] Programa de gestão enviado para aprovação",
+            "Mensagem": "Prezado(a),<br><br>Um programa de gestão em unidade sob sua gestão foi enviado para aprovação."
+          },
+          "EmailPlanoAprovado": {
+            "Assunto": "[Programa de gestão] Programa de gestão aprovado",
+            "Mensagem": "Prezado(a),<br><br>Um programa de gestão em unidade sob sua gestão foi aprovado."
+          },
+          "EmailPlanoRejeitado": {
+            "Assunto": "[Programa de gestão] Programa de gestão rejeitado",
+            "Mensagem": "Prezado(a),<br><br>Um programa de gestão em unidade sob sua gestão foi rejeitado."
+          },
+          "EmailPlanoCandidaturaRegistrada": {
+            "Assunto": "[Programa de gestão] Candidatura no programa de gestão registrada",
+            "Mensagem": "Prezado(a),<br><br>Sua candidatura a uma vaga no programa de gestão foi registrada."
+          },
+          "EmailPlanoEmHabilitacao": {
+            "Assunto": "[Programa de gestão] Habilitação iniciada",
+            "Mensagem": "Prezado(a),<br><br>Está aberta a fase de habilitação de um programa de gestão na sua unidade.<br>Se for do seu interesse, candidate-se a uma das vagas."
+          },
+          "EmailPlanoCandidaturaAprovada": {
+            "Assunto": "[Programa de gestão] Candidatura aprovada",
+            "Mensagem": "Prezado(a),<br><br>Sua candidatura para vaga no programa de gestão foi aprovada.<br>Aguarde até que a execução do programa de gestão seja iniciada para que possa fazer o apontamento das suas atividades."
+          },
+          "EmailPlanoCandidaturaRejeitada": {
+            "Assunto": "[Programa de gestão] Candidatura rejeitada",
+            "Mensagem": "Prezado(a),<br><br>Sua candidatura para vaga no programa de gestão não foi aprovada.<br>Entre em contato com a sua chefia para entender os motivos."
+          },
+          "EmailPactoSituacaoAlterada": {
+            "Assunto": "[Programa de gestão] Alteração da situação de plano de trabalho",
+            "Mensagem": "Prezado(a),<br><br>Houve alteração da situação de um plano de trabalho em que você está envolvido."
+          },
+          "EmailPactoSolicitacaoAlteracaoPrazo": {
+            "Assunto": "[Programa de gestão] Proposta de alteração de prazo",
+            "Mensagem": "Prezado(a),<br><br>Uma alteração do prazo de um plano de trabalho em que você está envolvido foi solicitada."
+          },
+          "EmailPactoSolicitacaoNovaAtividade": {
+            "Assunto": "[Programa de gestão] Proposta de nova atividade",
+            "Mensagem": "Prezado(a),<br><br>Uma adição de atividade em um plano de trabalho em que você está envolvido foi solicitada."
+          },
+          "EmailPactoSolicitacaoExclusaoAtividade": {
+            "Assunto": "[Programa de gestão] Proposta de exclusão de atividade",
+            "Mensagem": "Prezado(a),<br><br>Uma exclusão de atividade de um plano de trabalho em que você está envolvido foi solicitada."
+          },
+          "EmailPactoSolicitacaoJustificativaEstouroPrazo": {
+            "Assunto": "[Programa de gestão] Solicitação de justificativa de estouro de prazo registrada",
+            "Mensagem": "Prezado(a),<br><br>Uma justificativa de estouro de prazo na execução de uma atividade em um plano de trabalho em que você está envolvido foi solicitada."
+          },
+          "EmailPactoSolicitacaoAnalisada": {
+            "Assunto": "[Programa de gestão] Solicitação analisada",
+            "Mensagem": "Prezado(a),<br><br>Uma solicitação de alteração de um plano de trabalho em que você está envolvido foi analisada."
+          },
+          "EmailPactoAtividadeAvaliada": {
+            "Assunto": "[Programa de gestão] Avaliação de atividade",
+            "Mensagem": "Prezado(a),<br><br>Uma atividade em um plano de trabalho em que você está envolvido foi avaliada."
+          }
+        }
+      }
+    }
+
+  # Arquivos de configuração | GATEWAY
+  appsettings.Homolog.json: |
+    {
+      "Serilog": {
+        "Using":  [ "Serilog.Sinks.File" ],
+        "MinimumLevel": {
+          "Default": "Warning",
+          "Override": {
+            "Microsoft": "Warning"
+          }
+        },  
+        "WriteTo": [
+          { "Name": "File", "Args": { "path": "Logs/log.txt" } }
+        ],
+        "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ]
+      },
+      "identityServer": {
+        "jwtBearerOptions": {
+          "authority": "http://pgd-api-postgres",
+          "requireHttpsMetadata": false,
+          "audience": "SISGP.APIGateway"
+        }
+      }
+    }
+
+  ocelot.Homolog.json: |
+    {
+      "ReRoutes": [
+        {
+          "UpstreamPathTemplate": "/swagger/{everything}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/swagger/{everything}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false
+        },
+
+        {
+          "UpstreamPathTemplate": "/connect/{everything}",
+          "UpstreamHttpMethod": [ "GET", "POST" ],
+          "DownstreamPathTemplate": "/connect/{everything}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false
+        },
+
+        {
+          "UpstreamPathTemplate": "/dominio/ModalidadeExecucao",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/dominio/ModalidadeExecucao",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "FileCacheOptions": {
+            "TtlSeconds": 3600,
+            "Region": "ModalidadeExecucao"
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/dominio/FormaCalculoTempoItemCatalogo",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/dominio/FormaCalculoTempoItemCatalogo",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "FileCacheOptions": {
+            "TtlSeconds": 3600,
+            "Region": "FormaCalculoTempoItemCatalogo"
+          },
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/dominio/SituacaoPlanoTrabalho",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/dominio/SituacaoPlanoTrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "FileCacheOptions": {
+            "TtlSeconds": 3600,
+            "Region": "SituacaoPlanoTrabalho"
+          },
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/dominio/SituacaoPactoTrabalho",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/dominio/SituacaoPactoTrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "FileCacheOptions": {
+            "TtlSeconds": 3600,
+            "Region": "SituacaoPactoTrabalho"
+          },
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/dominio/SituacaoAtividadePactoTrabalho",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/dominio/SituacaoAtividadePactoTrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "FileCacheOptions": {
+            "TtlSeconds": 3600,
+            "Region": "SituacaoAtividadePactoTrabalho"
+          },
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/dominio/CriterioPerfilAtividadePlano",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/dominio/CriterioPerfilAtividadePlano",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "FileCacheOptions": {
+            "TtlSeconds": 3600,
+            "Region": "CriterioPerfilAtividadePlano"
+          },
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/dominio/SituacaoCandidaturaPlanoTrabalho/Solicitada",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/dominio/SituacaoCandidaturaPlanoTrabalho/Solicitada",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "FileCacheOptions": {
+            "TtlSeconds": 3600,
+            "Region": "SituacaoCandidaturaPlanoTrabalhoSolicitada"
+          },
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+
+
+        {
+          "UpstreamPathTemplate": "/catalogo",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/catalogo",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/catalogo/{unidadeId}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/catalogo/{unidadeId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/catalogo/{unidadeId}/itens",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/catalogo/{unidadeId}/itens",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/catalogo",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/catalogo",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/catalogo/{Catalogoid}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/catalogo/{Catalogoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/catalogo/{Catalogoid}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/catalogo/{Catalogoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/catalogo/{catalogoid}/item",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/catalogo/{catalogoid}/item",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/catalogo/{catalogoid}/item/{itemCatalogoId}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/catalogo/{catalogoid}/item/{itemCatalogoId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+
+
+        {
+          "UpstreamPathTemplate": "/itemcatalogo",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/itemcatalogo",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/itemcatalogo/{itemCatalogoid}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/itemcatalogo/{itemCatalogoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/itemcatalogo",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/itemcatalogo",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/itemcatalogo/{itemCatalogoid}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/itemcatalogo/{itemCatalogoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/itemcatalogo/{itemCatalogoid}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/itemcatalogo/{itemCatalogoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+
+
+        {
+          "UpstreamPathTemplate": "/pactotrabalho",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/atual",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/atual",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/periodo",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/periodo",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/historico",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/historico",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/enviarParaAceite",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/enviarParaAceite",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/aceitar",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/aceitar",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/rejeitar",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/rejeitar",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/voltarParaRascunho",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/voltarParaRascunho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/iniciarExecucao",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/iniciarExecucao",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/concluirExecucao",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/concluirExecucao",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/reabrir",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/reabrir",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/avaliar",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/avaliar",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/atividades",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/atividades",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/atividades",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/atividades",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/todo",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/todo",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/doing",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/doing",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/done",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/done",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/andamento",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/andamento",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/avaliar",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/atividades/{pactoTrabalhoAtividadeId}/avaliar",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/solicitacao",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/solicitacao",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/solicitacao/prazo",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/solicitacao/prazo",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/solicitacao/atividade",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/solicitacao/atividade",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/solicitacao/justificarestouroprazo",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/solicitacao/justificarestouroprazo",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/solicitacao/excluiratividade",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/solicitacao/excluiratividade",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/solicitacao/{pactoTrabalhoSolicitacaoId}/responder",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/solicitacao/{pactoTrabalhoSolicitacaoId}/responder",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pactotrabalho/{pactoTrabalhoid}/assuntosParaAssociar",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pactotrabalho/{pactoTrabalhoid}/assuntosParaAssociar",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+
+
+        {
+          "UpstreamPathTemplate": "/pessoa",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pessoa",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pessoa/perfil",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pessoa/perfil",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pessoa/{pessoaId}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pessoa/{pessoaId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pessoa/{pessoaId}/feriados",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pessoa/{pessoaId}/feriados",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/pessoa/compactotrabalho",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/pessoa/compactotrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+
+
+        {
+          "UpstreamPathTemplate": "/planotrabalho",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/atual",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/atual",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/habilitacao",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/habilitacao",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/pactosTrabalho",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/pactosTrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/historico",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/historico",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/situacao",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/situacao",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/atividades",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/atividades",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/atividades",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/atividades",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/atividades/candidato",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/atividades/candidato",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}/candidato",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}/candidato",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}/candidato",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}/candidato",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}/candidato/{planoTrabalhoAtividadeCandidatoId}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/atividades/{planoTrabalhoAtividadeId}/candidato/{planoTrabalhoAtividadeCandidatoId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/pessoasModalidadesExecucao",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/pessoasModalidadesExecucao",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/metas",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/metas",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/metas",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/metas",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/metas/{planoTrabalhoMetaId}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/metas/{planoTrabalhoMetaId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/metas/{planoTrabalhoMetaId}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/metas/{planoTrabalhoMetaId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/reunioes",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/reunioes",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/reunioes",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/reunioes",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/reunioes/{planoTrabalhoReuniaoId}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/reunioes/{planoTrabalhoReuniaoId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/reunioes/{planoTrabalhoReuniaoId}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/reunioes/{planoTrabalhoReuniaoId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/custos",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/custos",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/custos",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/custos",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/custos/{planoTrabalhoCustoId}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/custos/{planoTrabalhoCustoId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/custos/{planoTrabalhoCustoId}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/custos/{planoTrabalhoCustoId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/objetos",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/objetos",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/objetosassociadosounaoatividadepacto",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/objetosassociadosounaoatividadepacto",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/objetos/{planoTrabalhoObjetoId}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/objetos/{planoTrabalhoObjetoId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/objetos/{planoTrabalhoObjetoId}",
+          "UpstreamHttpMethod": [ "DELETE" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/objetos/{planoTrabalhoObjetoId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/objetos",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/objetos",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/planotrabalho/{planoTrabalhoid}/objetos/{planoTrabalhoObjetoId}",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/planotrabalho/{planoTrabalhoid}/objetos/{planoTrabalhoObjetoId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+
+
+        {
+          "UpstreamPathTemplate": "/unidade/ativas",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/unidade/ativas",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/unidade/complanotrabalho",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/unidade/complanotrabalho",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/unidade/semcatalogocadastrado",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/unidade/semcatalogocadastrado",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/unidade/comcatalogocadastrado",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/unidade/comcatalogocadastrado",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/unidade/{unidadeId}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/unidade/{unidadeId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/unidade/{unidadeId}/modalidadeexecucao",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/unidade/{unidadeId}/modalidadeexecucao",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/unidade/{unidadeId}/pessoas",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/unidade/{unidadeId}/pessoas",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+
+        {
+          "UpstreamPathTemplate": "/assunto",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/assunto",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/assunto",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/assunto",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/assunto",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/assunto",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/assunto/{id}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/assunto/{id}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/assunto/texto",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/assunto/texto",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+
+        {
+          "UpstreamPathTemplate": "/objeto",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/objeto",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/objeto",
+          "UpstreamHttpMethod": [ "POST" ],
+          "DownstreamPathTemplate": "/api/v1/objeto",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/objeto",
+          "UpstreamHttpMethod": [ "PUT" ],
+          "DownstreamPathTemplate": "/api/v1/objeto",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/objeto/{id}",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/objeto/{id}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        },
+        {
+          "UpstreamPathTemplate": "/objeto/texto",
+          "UpstreamHttpMethod": [ "GET" ],
+          "DownstreamPathTemplate": "/api/v1/objeto/texto",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "pgd-api-postgres",
+              "Port": 80
+            }
+          ],
+          "ReRouteIsCaseSensitive": false,
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": [ "SISGP.ProgramaGestao" ]
+          }
+        }
+      ],
+      "GlobalConfiguration": {
+        "ServiceDiscoveryProvider": {
+          "BaseUrl": "http://pgd-gateway-postgres/gateway"
+        }
+      }
+    }
+
+---
+# kubectl get pod <pod-name> --output=yaml -n pgd-postgres | grep resources -C 100
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgd-app-postgres
+  namespace: pgd-postgres
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pgd-app-postgres
+    spec:
+      containers:
+      - name: pgd-app-postgres
+        image: erivando/pdg-susep-ubuntu20-postgres:latest
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: 0.1
+          limits:
+            memory: "100Mi"
+            cpu: 0.2
+        imagePullPolicy: Always
+        workingDir: /opt/pgd/app/
+        command: ["/bin/bash"]
+        args: ["-c", 
+          "echo dotnet --info; 
+          dotnet Susep.SISRH.WebApp.dll"]
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Homolog"
+        - name: ASPNETCORE_URLS
+          value: http://+:80
+        envFrom:
+          - configMapRef:
+              name: pgd-config-postgres
+        volumeMounts:
+        - name: envjs
+          mountPath: /opt/pgd/app/ClientApp/dist/env.js
+          subPath: env.js
+      volumes:
+        - name: envjs
+          configMap:
+            name: pgd-config-postgres
+  selector:
+    matchLabels:
+        app: pgd-app-postgres
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgd-gateway-postgres
+  namespace: pgd-postgres
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pgd-gateway-postgres
+    spec:
+      containers:
+      - name: pgd-gateway-postgres
+        image: erivando/pdg-susep-ubuntu20-postgres:latest
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: 0.1
+          limits:
+            memory: "100Mi"
+            cpu: 0.2
+        imagePullPolicy: Always
+        workingDir: /opt/pgd/gateway/
+        command: ["/bin/bash"]
+        args: ["-c",
+          "echo dotnet --info;
+          dotnet Susep.SISRH.ApiGateway.dll"]
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_URLS
+          value: http://+:80
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Homolog"
+        envFrom:
+          - configMapRef:
+              name: pgd-config-postgres
+        volumeMounts:
+        - name: appsettings
+          mountPath: /opt/pgd/gateway/Settings/appsettings.Homolog.json
+          subPath: appsettings.Homolog.json
+        - name: ocelot
+          mountPath: /opt/pgd/gateway/Settings/ocelot.Homolog.json
+          subPath: ocelot.Homolog.json
+        - name: log
+          mountPath: /opt/pgd/gateway/Logs
+          subPath: log.txt
+      volumes:
+        - name: appsettings
+          configMap:
+            name: pgd-config-postgres
+        - name: ocelot
+          configMap:
+            name: pgd-config-postgres
+        - name: log
+          emptyDir: {}
+  selector:
+    matchLabels:
+      app: pgd-gateway-postgres
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgd-api-postgres
+  namespace: pgd-postgres
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pgd-api-postgres
+    spec:
+      containers:
+      - name: pgd-api-postgres
+        image: erivando/pdg-susep-ubuntu20-postgres:latest
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: 0.1
+          limits:
+            memory: "100Mi"
+            cpu: 0.2
+        imagePullPolicy: Always
+        workingDir: /opt/pgd/api/
+        command: ["/bin/bash"]
+        args: ["-c", 
+          "echo dotnet --info; 
+          dotnet Susep.SISRH.WebApi.dll"]
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_URLS
+          value: http://+:80
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Homolog"
+        envFrom:
+          - secretRef:
+              name: pgd-secrets-postgres
+          - configMapRef:
+              name: pgd-config-postgres
+        volumeMounts:
+        - name: appsettings
+          mountPath: /opt/pgd/api/Settings/appsettings.Homolog.json
+          subPath: appsettings-api.Homolog.json
+        - name: connectionstrings
+          mountPath: /opt/pgd/api/Settings/connectionstrings.Homolog.json
+          subPath: connectionstrings.Homolog.json
+        - name: log
+          mountPath: /opt/pgd/api/Logs
+          subPath: log.txt
+      volumes:
+        - name: appsettings
+          configMap:
+            name: pgd-config-postgres
+            optional: true
+        - name: connectionstrings
+          configMap:
+            name: pgd-config-postgres
+            optional: true
+        - name: log
+          emptyDir: {}
+  selector:
+    matchLabels:
+        app: pgd-api-postgres
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgd-app-postgres
+  labels:
+    app: pgd-app-postgres
+  namespace: pgd-postgres
+spec:
+  selector:
+    app: pgd-app-postgres
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgd-gateway-postgres
+  labels:
+    app: pgd-gateway-postgres
+  namespace: pgd-postgres
+spec:
+  selector:
+     app: pgd-gateway-postgres
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgd-api-postgres
+  labels:
+    app: pgd-api-postgres
+  namespace: pgd-postgres
+spec:
+  selector:
+     app: pgd-api-postgres
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: http
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pgd-app-postgres
+  namespace: pgd-postgres
+  annotations:
+    haproxy.org/check: "enabled"
+    haproxy.org/forwarded-for: "enabled"
+    haproxy.org/load-balance: "roundrobin"
+    haproxy.org/ssl-redirect: "true"
+    haproxy.org/ssl-redirect-code: "301"
+    haproxy.org/backend-config-snippet: |
+      http-request set-path %[path,regsub(^/safe/sisgp/programagestao/app/,/)]
+spec:
+  rules:
+    - host: pgd.localhost.psql
+      http:
+        paths:
+        - path: /
+          pathType: Prefix 
+          backend:
+            service:
+              name: pgd-app-postgres
+              port:
+                number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pgd-gateway-postgres
+  namespace: pgd-postgres
+  annotations:
+    haproxy.org/check: "enabled"
+    haproxy.org/forwarded-for: "enabled"
+    haproxy.org/load-balance: "roundrobin"
+    haproxy.org/ssl-redirect: "true"
+    haproxy.org/ssl-redirect-code: "301"
+    haproxy.org/backend-config-snippet: |
+      http-request set-path %[path,regsub(^/gateway/,/)]
+spec:
+  rules:
+    - host: pgd.localhost.psql
+      http: 
+        paths:
+          - pathType: Prefix
+            path: /gateway
+            backend:
+              service:
+                name: pgd-gateway-postgres
+                port:
+                  number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pgd-api-postgres
+  namespace: pgd-postgres
+  annotations:
+    haproxy.org/check: "enabled"
+    haproxy.org/forwarded-for: "enabled"
+    haproxy.org/load-balance: "roundrobin"
+    haproxy.org/ssl-redirect: "true"
+    haproxy.org/ssl-redirect-code: "301"
+    haproxy.org/backend-config-snippet: |
+      http-request set-path %[path,regsub(^/SISGP/api/,/)]
+spec:
+  rules:
+    - host: pgd.localhost.psql
+      http: 
+        paths:
+          - pathType: Prefix
+            path: /api
+            backend:
+              service:
+                name: pgd-api-postgres
+                port:
+                  number: 80

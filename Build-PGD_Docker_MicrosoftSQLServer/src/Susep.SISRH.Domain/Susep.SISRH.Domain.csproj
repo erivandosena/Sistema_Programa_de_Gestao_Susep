@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="SUSEP.Framework.Result" Version="3.3.2" />
+    <PackageReference Include="SUSEP.Framework.SeedWorks" Version="3.7.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Events\" />
+    <Folder Include="Mappers\" />
+  </ItemGroup>
+
+</Project>
