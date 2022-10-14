@@ -17,7 +17,3 @@ Docker-compose v1 e/ou v2
 
 `$> docker compose -p pgd-docker-sqlserver -f docker-compose.mssqlserver.yml up -d`  
 `$> docker compose -p pgd-docker-postgres -f docker-compose.postgres.yml up -d`
-
-
-#### Contribuições
-Sugestões de posíveis melhorias no Docker Compose e configurações estática/dinâmica nos YAMLs são bem vindas.
