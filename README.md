@@ -34,7 +34,7 @@ Para uma experiência completa do ambiente apresentado, faz necessário alguns a
 > CMD - Prompt de Comando do **Windows PowerShell**
 
 - No Windows editar o arquivo hosts em **`C:\Windows\System32\drivers\etc\hosts`**
-- No Linux editar o arquivo hosts em **`/etc/hosts`** incluir as linhas abaixo:
+- No Linux editar o arquivo hosts em **`/etc/hosts`** 
 
 > **Edite o arquivo hosts (para Windows)**  
 ```console
