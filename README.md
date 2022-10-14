@@ -62,27 +62,27 @@ cd \PGD-Docker
 Traefik com configuração de roteamento dinâmico e configuração de inicialização estática. *Fonte imagem, doc.traefik.io*
 
 2 - Acessar o diretório **/Proxy-TRAEFIK**, e provisione o container do Proxy com   
-`$> docker-compose up -d` e logs com  
+`$> docker-compose up -d`   
 Logs  
 `$> type /logs/traefik.log`
 
 ![PostgreSQL com pgAdmin 4](https://dev-to-uploads.s3.amazonaws.com/i/vdj2zzqchoxcs654lz9s.png)
 
-3 - Para **PGD com Postgres**, acessar o diretório **`/Build-PGD_Docker_PostgreSQL`**, construir a imagem do pgd para Postgres. 
-`$> docker build -f ./Dockerfile -t erivando/pdg-susep-ubuntu20-postgres:latest ./src/`  
-`$> docker push SEU-USER/pdg-susep-ubuntu20-postgres:latest` (opcional)  
+3 - Para **PGD com Postgres**, acessar o diretório **`/Build-PGD_Docker_PostgreSQL`**, construir a imagem do pgd para Postgres.   
+`$> docker build -f ./Dockerfile -t erivando/pdg-susep-ubuntu20-postgres:latest ./src/`   
+`$> docker push SEU-USER/pdg-susep-ubuntu20-postgres:latest` (opcional)   
 
 3.1 - E provisionar também o container para o PostgreSQL e pgAdmin 4 (Para Administração de databases postgres).  
-`$> docker compose -p postgres-pgadmin -f docker-compose.yml up -d`
+`$> docker compose -p postgres-pgadmin -f docker-compose.yml up -d`  
 
 ![Microsoft SQLServer Express](https://www.jenx.si/wp-content/uploads/2022/02/sql-server-docker-logo.png)
 
-4 - Para **PGD com SqlServer**, acessar o diretório **`/Build-PGD_Docker_MicrosoftSQLServer`**, construir a imagem do pgd para SqlServer. 
+4 - Para **PGD com SqlServer**, acessar o diretório **`/Build-PGD_Docker_MicrosoftSQLServer`**, construir a imagem do pgd para SqlServer.   
 `$> docker build -f ./Dockerfile -t erivando/pdg-susep-ubuntu20-mssqlserver:latest ./src/`  
-`$> docker push SEU-USER/pdg-susep-ubuntu20-mssqlserver:latest` (opcional) 
+`$> docker push SEU-USER/pdg-susep-ubuntu20-mssqlserver:latest` (opcional)  
 
-4.1 - E provisionar também o container do SQLServer.  
-`$> docker compose -p mssqlserver-express -f docker-compose.yml up -d`
+4.1 - E provisionar também o container do SQLServer.   
+`$> docker compose -p mssqlserver-express -f docker-compose.yml up -d`  
 
 ##### Nota adicional
 O acesso administrativo do bancos de dados do SqlServer é padrão através do **Microsoft SQL Server Management Studio**  
@@ -109,7 +109,7 @@ Endereço do host (estação de trabalho) onde está subindo os serviços, se us
 `$> type .\logs\api\log_pgd_postgres.log`  
 `$> type .\logs\gateway\log_pgd_postgres.log`  
 
-- **Para PGD da versão com banco de dados MS SqlServer Express** 
+- **Para PGD da versão com banco de dados MS SqlServer Express**  
 `$> docker compose -p pgd-docker-sqlserver -f docker-compose.mssqlserver.yml up -d`  
 
 - Logs:   
@@ -120,7 +120,7 @@ Endereço do host (estação de trabalho) onde está subindo os serviços, se us
 
 **Prompt de Comando**:  
 ![Prompt de Comando do Windows|img|1770x340,100%](./Containers-CMD.jpg)
-Ou
+Ou  
 **Docker Decktop**:  
 ![Docker Decktop Windows](./Containers-DockerDesktop.jpg)  
 
@@ -144,7 +144,7 @@ Usuario: test
 Senha: test  
 
 > **pgAdmin 4**  
-http://localhost:8099/
+http://localhost:8099/  
 Usuario: admin@admin.com  
 Senha: admin1234  
 
