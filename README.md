@@ -153,7 +153,7 @@ Password: postgres
 
 ![Kubernetes e HAProxy Kubernetes Ingress Controller](https://www.bluematador.com/hs-fs/hubfs/old-assets/haproxy-kubernetes.jpg?width=1440&name=haproxy-kubernetes.jpg)
 
-##### Deployments YAML para provisionamento do PGD em PostgreSQL e/ou SQL Server Express no Kubernetes
+##### Deployments YAML para provisionamento do PGD com o RDBMS PostgreSQL no Kubernetes
 
 Acessar o diretório **`/Deploy-PGD_Kubernetes_HAProxy`**
 
