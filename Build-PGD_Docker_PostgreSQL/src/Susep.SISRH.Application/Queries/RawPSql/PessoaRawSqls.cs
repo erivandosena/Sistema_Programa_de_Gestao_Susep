@@ -22,7 +22,8 @@
 					    INNER JOIN  ""dbo"".""SituacaoPessoa"" ""sp"" ON ""sp"".""situacaoPessoaId"" = p.""situacaoPessoaId""
 					    INNER JOIN  ""dbo"".""TipoVinculo"" ""tv"" ON ""tv"".""tipoVinculoId"" = p.""tipoVinculoId""
                     WHERE   (@unidadeId IS NULL OR p.""unidadeId"" = @unidadeId)
-                            AND (@pesNome IS NULL OR p.""pesNome""  LIKE '%' || @pesNome || '%')                    
+                            AND (@pesNome IS NULL OR p.""pesNome""  ILIKE '%' || @pesNome || '%') 
+                            AND (@pesNome IS NULL OR translate(p.""pesNome"", 'áàâãäéèêëíìïóòôõöúùûüÁÀÂÃÄÉÈÊËÍÌÏÓÒÔÕÖÚÙÛÜçÇ', 'aaaaaeeeeiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcC')  ILIKE '%' || translate(@pesNome, 'áàâãäéèêëíìïóòôõöúùûüÁÀÂÃÄÉÈÊËÍÌÏÓÒÔÕÖÚÙÛÜçÇ', 'aaaaaeeeeiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcC') || '%')                    
                     ORDER BY ""pesNome"" ASC, ""unidadeId"" DESC, ""cargaHoraria"" ASC
 
                     OFFSET @Offset ROWS
@@ -34,7 +35,8 @@
 					    INNER JOIN  ""dbo"".""SituacaoPessoa"" ""sp"" ON ""sp"".""situacaoPessoaId"" = p.""situacaoPessoaId""
 					    INNER JOIN  ""dbo"".""TipoVinculo"" ""tv"" ON ""tv"".""tipoVinculoId"" = p.""tipoVinculoId""
                     WHERE   (@unidadeId IS NULL OR p.""unidadeId"" = @unidadeId)
-                            AND (@pesNome IS NULL OR p.""pesNome""  LIKE '%' || @pesNome || '%')                      
+                            AND (@pesNome IS NULL OR p.""pesNome""  ILIKE '%' || @pesNome || '%') 
+                            AND (@pesNome IS NULL OR translate(p.""pesNome"", 'áàâãäéèêëíìïóòôõöúùûüÁÀÂÃÄÉÈÊËÍÌÏÓÒÔÕÖÚÙÛÜçÇ', 'aaaaaeeeeiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcC')  ILIKE '%' || translate(@pesNome, 'áàâãäéèêëíìïóòôõöúùûüÁÀÂÃÄÉÈÊËÍÌÏÓÒÔÕÖÚÙÛÜçÇ', 'aaaaaeeeeiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcC') || '%')                      
                 ";
             }
         }

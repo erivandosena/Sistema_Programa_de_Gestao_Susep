@@ -75,6 +75,9 @@ Logs
 3.1 - E provisionar também o container para o PostgreSQL e pgAdmin 4 (Para Administração de databases postgres).  
 `$> docker compose -p postgres-pgadmin -f docker-compose.yml up -d`  
 
+*Uma dica é acompanhar os logs da criação do banco de dados, para verificar se tudo ocorreu como esperado.*
+![Logs do PostgreSQL](./Postgresql_Logs.jpg)
+
 ![Microsoft SQLServer Express](https://www.jenx.si/wp-content/uploads/2022/02/sql-server-docker-logo.png)
 
 4 - Para **PGD com SqlServer**, acessar o diretório **`/Build-PGD_Docker_MicrosoftSQLServer`**, construir a imagem do pgd para SqlServer.   

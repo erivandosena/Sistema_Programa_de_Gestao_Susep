@@ -132,6 +132,7 @@ namespace Susep.SISRH.Application.Queries.Concrete
             parameters.Add("@offset", (request.Page - 1) * request.PageSize, DbType.Int32, ParameterDirection.Input);
             parameters.Add("@pageSize", request.PageSize, DbType.Int32, ParameterDirection.Input);            
 
+
             var unidades = new List<Int64>();
             if (request.UnidadeId.HasValue) 
                 unidades.Add(request.UnidadeId.Value);
@@ -145,6 +146,13 @@ namespace Susep.SISRH.Application.Queries.Concrete
                 query = query.Replace("#UNIDADES#", " AND p.\"unidadeId\" in (" + String.Join(',', unidades) + " )");
             else
                 query = query.Replace("#UNIDADES#", string.Empty);
+
+            if (!request.IsGestor)
+                query = query.Replace("#CONTROLE#", PactoTrabalhoRawSqls.ControleAcesso);
+            else
+                query = query.Replace("#CONTROLE#", string.Empty);
+
+            query = query.Replace("#UNIDADES#", string.Empty);
 
             using (var connection = new SqlConnection(Configuration.GetConnectionString("DefaultConnection")))
             {

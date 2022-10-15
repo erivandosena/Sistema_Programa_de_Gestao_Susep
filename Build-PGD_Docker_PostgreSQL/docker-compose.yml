@@ -1,4 +1,4 @@
-# docker-compose -f .\docker-compose.yml up -d
+# docker compose -p postgres-pgadmin -f docker-compose.yml up -d
 # docker exec -it postgresql /bin/bash
 # psql -U postgres
 # SHOW config_file;
