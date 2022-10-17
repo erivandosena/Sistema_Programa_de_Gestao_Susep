@@ -14,7 +14,7 @@ services:
     command: dotnet Susep.SISRH.WebApi.dll
     volumes:
       - ./config/api/Settings/postgres:/opt/pgd/api/Settings:ro
-      - ./logs/api/log_pgd_postgres.log:/opt/pgd/api/Logs/log.txt:rw
+      - ./logs/api/log_pgd_postgres:/opt/pgd/api/Logs:rw
     environment:
       - ASPNETCORE_URLS=http://+:80
       - TZ=America/Fortaleza
@@ -47,7 +47,7 @@ services:
     command: dotnet Susep.SISRH.ApiGateway.dll
     volumes:
       - ./config/gateway/Settings/postgres:/opt/pgd/gateway/Settings:ro
-      - ./logs/gateway/log_pgd_postgres.log:/opt/pgd/gateway/Logs/log.txt:rw
+      - ./logs/gateway/log_pgd_postgres:/opt/pgd/gateway/Logs:rw
     environment:
       - ASPNETCORE_URLS=http://+:80
       - TZ=America/Fortaleza
