@@ -19,46 +19,86 @@ echo " ⏳ Configurando o PostgreSQL"
 # databases
 function create_user_and_database() {
 	local database=$1
-	echo " ⏳ Criando usuário e banco de dados '$database'"
+	echo " ⏳ Elevando o usuario e criando o banco de dados $database"
 	psql -v ON_ERROR_STOP=1 -d "host=localhost port=5432 dbname=postgres user=$POSTGRESQL_SUPERADMIN_USERNAME" -W "$POSTGRESQL_SUPERADMIN_PASSWORD" <<-EOSQL
 	    
-        --CREATE USER IF NOT EXISTS $POSTGRESQL_USERNAME WITH PASSWORD $POSTGRESQL_PASSWORD;
-        ALTER USER $POSTGRESQL_USERNAME WITH CREATEDB CREATEROLE REPLICATION SUPERUSER;
-	    CREATE DATABASE $database;
-	    GRANT ALL PRIVILEGES ON DATABASE $database TO $POSTGRESQL_USERNAME;
+        ------------------------------------------------------------------------------------
+        -- CONFIGURA USUARIO E SENHA
+        ------------------------------------------------------------------------------------
+        ALTER USER "$POSTGRESQL_USERNAME" WITH 
+            SUPERUSER
+            LOGIN 
+            CREATEDB
+            CREATEROLE
+            REPLICATION
+            INHERIT
+            CONNECTION LIMIT -1;
+        COMMENT ON ROLE pgd IS 'Usuario padrao do banco de dados';
+
+        ------------------------------------------------------------------------------------
+        -- CRIA DATABASE
+        ------------------------------------------------------------------------------------
+        CREATE DATABASE "$database"
+            WITH
+            OWNER = "$POSTGRESQL_USERNAME"
+            ENCODING = 'UTF8'
+            CONNECTION LIMIT = -1
+            TEMPLATE template0;
+        COMMENT ON DATABASE pgd_staging IS 'Dadabase PosgresSQL migrado do MS SqlServer.';
+
 EOSQL
 }
 
 # schemas
 function create_schemas() {
 	local database=$1
-	echo " ⏳ Criando schemas para o banco de dados '$database'"
-	# psql -v ON_ERROR_STOP=1 --username "$POSTGRESQL_USERNAME" --password "$POSTGRESQL_PASSWORD" -d "$database" <<-EOSQL
+	echo " ⏳ Configurando schemas para o banco de dados $database"
     psql -v ON_ERROR_STOP=1 -d "host=localhost port=5432 dbname=$database user=$POSTGRESQL_USERNAME" -W "$POSTGRESQL_PASSWORD" <<-EOSQL
         
+        ------------------------------------------------------------------------------------
+        -- CONFIGURA SCHEMAS para DATABASE E USUARIO PADRAO DO BANCO
+        ------------------------------------------------------------------------------------
+            
         CREATE SCHEMA IF NOT EXISTS dbo;
         CREATE SCHEMA IF NOT EXISTS "ProgramaGestao";
-        GRANT ALL ON SCHEMA dbo TO $POSTGRESQL_USERNAME;
-        GRANT ALL ON SCHEMA "ProgramaGestao" TO $POSTGRESQL_USERNAME;
+        GRANT ALL ON SCHEMA "ProgramaGestao" TO "$POSTGRESQL_USERNAME";
+        GRANT ALL ON SCHEMA dbo TO "$POSTGRESQL_USERNAME";
+        --GRANT ALL ON SCHEMA public TO "$POSTGRESQL_USERNAME";
+        GRANT ALL PRIVILEGES ON DATABASE "$database" TO "$POSTGRESQL_USERNAME";
         SET search_path TO dbo;
-        SET search_path TO "ProgramaGestao";
-        ALTER DATABASE $database SET search_path TO dbo;
-        ALTER DATABASE $database SET search_path TO "ProgramaGestao";
+        ALTER DATABASE "$database" SET search_path TO dbo;
 
+        ------------------------------------------------------------------------------------
+        -- EXCLUI O SCHEMA PADRAO
+        ------------------------------------------------------------------------------------
+        DROP SCHEMA IF EXISTS public CASCADE;
+
+EOSQL
+}
+function config_user() {
+	local database=$1
+	echo " ⏳ Configurando usuário do banco de dados $database"
+	psql -v ON_ERROR_STOP=1 -d "host=localhost port=5432 dbname=postgres user=$POSTGRESQL_SUPERADMIN_USERNAME" -W "$POSTGRESQL_SUPERADMIN_PASSWORD" <<-EOSQL
+	    
+        ------------------------------------------------------------------------------------
+        -- CONFIGURA USUARIO
+        ------------------------------------------------------------------------------------
+        ALTER USER "$POSTGRESQL_USERNAME" WITH 
+            --SUPERUSER
+            LOGIN 
+            CREATEDB
+            CREATEROLE
+            REPLICATION
+            INHERIT
+            CONNECTION LIMIT -1;
 EOSQL
 }
 
 # migrations
 function create_migrations() {
 	local database=$1
-	echo " ⏳ Excluindo schema padrão."
-	# psql -v ON_ERROR_STOP=1 --username "$POSTGRESQL_USERNAME" --password "$POSTGRESQL_PASSWORD" -d "$database" <<-EOSQL
-    psql -v ON_ERROR_STOP=1 -d "host=localhost port=5432 dbname=$database user=$POSTGRESQL_USERNAME" -W "$POSTGRESQL_PASSWORD" <<-EOSQL
-        
-        DROP SCHEMA IF EXISTS public CASCADE;
-EOSQL
 
-    echo " ⏳ Criando tabelas no '$database'"
+    echo " ⏳ Criando tabelas no $database"
 
     #################################################################################################
     #  Scripts necessários para criação da estrutura inicial do database.                           #
@@ -118,5 +158,10 @@ else
             create_migrations $db
         done
     fi
-fi
 
+    if [ -n "$POSTGRES_MULTIPLE_DATABASES" ]; then
+        for db in $(echo $POSTGRES_MULTIPLE_DATABASES | tr ',' ' '); do
+            config_user $db
+        done
+    fi
+fi

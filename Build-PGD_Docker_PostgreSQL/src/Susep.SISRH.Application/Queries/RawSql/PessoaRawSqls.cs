@@ -19,13 +19,14 @@
                           ,p.cargaHoraria
                     FROM [dbo].[Pessoa] p
                         INNER JOIN [dbo].[VW_UnidadeSiglaCompleta] u ON u.unidadeId = p.unidadeId   
-					    --LEFT OUTER JOIN [ProgramaGestao].[PlanoTrabalhoAtividadeCandidato] c ON p.pessoaId = c.pessoaId
-					    --LEFT OUTER JOIN  [dbo].[CatalogoDominio] d ON d.catalogoDominioId = c.situacaoId 
-					    INNER JOIN  [dbo].[situacaoPessoa] sp ON sp.situacaoPessoaId = p.situacaoPessoaId
-					    INNER JOIN  [dbo].[TipoVinculo] tv ON tv.tipoVinculoId = p.tipoVinculoId
-                    WHERE   (@unidadeId IS NULL OR p.unidadeId = @unidadeId)
-                            AND (@pesNome IS NULL OR p.pesNome  LIKE '%' + @pesNome + '%')  
-                            AND  (@catalogoDominioId IS NULL OR d.catalogoDominioId = @catalogoDominioId) 
+					    LEFT OUTER JOIN [ProgramaGestao].[PlanoTrabalhoAtividadeCandidato] c ON p.pessoaId = c.pessoaId
+					    LEFT OUTER JOIN [dbo].[CatalogoDominio] d ON d.catalogoDominioId = c.situacaoId 
+					    INNER JOIN [dbo].[SituacaoPessoa] sp ON sp.situacaoPessoaId = p.situacaoPessoaId
+					    INNER JOIN [dbo].[TipoVinculo] tv ON tv.tipoVinculoId = p.tipoVinculoId
+                    WHERE (@unidadeId IS NULL OR p.unidadeId = @unidadeId)
+                            AND (@pesNome IS NULL OR p.pesNome ILIKE '%' + @pesNome + '%')  
+                            AND (@catalogoDominioId IS NULL OR d.catalogoDominioId = @catalogoDominioId) 
+                            AND (@pesNome IS NULL OR translate(p.pesNome, 'áàâãäéèêëíìïóòôõöúùûüÁÀÂÃÄÉÈÊËÍÌÏÓÒÔÕÖÚÙÛÜçÇ', 'aaaaaeeeeiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcC')  ILIKE '%' || translate(@pesNome, 'áàâãäéèêëíìïóòôõöúùûüÁÀÂÃÄÉÈÊËÍÌÏÓÒÔÕÖÚÙÛÜçÇ', 'aaaaaeeeeiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcC') || '%') 
                     ORDER BY pesNome ASC, unidadeId DESC, cargaHoraria ASC
 
                     OFFSET @Offset ROWS
@@ -34,13 +35,14 @@
                     SELECT COUNT(*)
                     FROM [dbo].[Pessoa] p
                         INNER JOIN [dbo].[VW_UnidadeSiglaCompleta] u ON u.unidadeId = p.unidadeId   
-					    --LEFT OUTER JOIN [ProgramaGestao].[PlanoTrabalhoAtividadeCandidato] c ON p.pessoaId = c.pessoaId
-					    --LEFT OUTER JOIN  [dbo].[CatalogoDominio] d ON d.catalogoDominioId = c.situacaoId 
-                        INNER JOIN  [dbo].[situacaoPessoa] sp ON sp.situacaoPessoaId = p.situacaoPessoaId
-					    INNER JOIN  [dbo].[TipoVinculo] tv ON tv.tipoVinculoId = p.tipoVinculoId
-                    WHERE   (@unidadeId IS NULL OR p.unidadeId = @unidadeId)
-                            AND (@pesNome IS NULL OR p.pesNome  LIKE '%' + @pesNome + '%')  
-                            AND  (@catalogoDominioId IS NULL OR d.catalogoDominioId = @catalogoDominioId) 
+					    LEFT OUTER JOIN [ProgramaGestao].[PlanoTrabalhoAtividadeCandidato] c ON p.pessoaId = c.pessoaId
+					    LEFT OUTER JOIN [dbo].[CatalogoDominio] d ON d.catalogoDominioId = c.situacaoId 
+                        INNER JOIN [dbo].[SituacaoPessoa] sp ON sp.situacaoPessoaId = p.situacaoPessoaId
+					    INNER JOIN [dbo].[TipoVinculo] tv ON tv.tipoVinculoId = p.tipoVinculoId
+                    WHERE (@unidadeId IS NULL OR p.unidadeId = @unidadeId)
+                            AND (@pesNome IS NULL OR p.pesNome ILIKE '%' + @pesNome + '%')  
+                            AND (@catalogoDominioId IS NULL OR d.catalogoDominioId = @catalogoDominioId) 
+                            AND (@pesNome IS NULL OR translate(p.pesNome, 'áàâãäéèêëíìïóòôõöúùûüÁÀÂÃÄÉÈÊËÍÌÏÓÒÔÕÖÚÙÛÜçÇ', 'aaaaaeeeeiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcC')  ILIKE '%' || translate(@pesNome, 'áàâãäéèêëíìïóòôõöúùûüÁÀÂÃÄÉÈÊËÍÌÏÓÒÔÕÖÚÙÛÜçÇ', 'aaaaaeeeeiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcC') || '%') 
                 ";
             }
         }
