@@ -44,7 +44,7 @@ function create_user_and_database() {
             ENCODING = 'UTF8'
             CONNECTION LIMIT = -1
             TEMPLATE template0;
-        COMMENT ON DATABASE pgd_staging IS 'Dadabase PosgresSQL migrado do MS SqlServer.';
+        COMMENT ON DATABASE "$database" IS 'Dadabase PosgresSQL migrado do MS SqlServer.';
 
 EOSQL
 }
@@ -63,7 +63,6 @@ function create_schemas() {
         CREATE SCHEMA IF NOT EXISTS "ProgramaGestao";
         GRANT ALL ON SCHEMA "ProgramaGestao" TO "$POSTGRESQL_USERNAME";
         GRANT ALL ON SCHEMA dbo TO "$POSTGRESQL_USERNAME";
-        --GRANT ALL ON SCHEMA public TO "$POSTGRESQL_USERNAME";
         GRANT ALL PRIVILEGES ON DATABASE "$database" TO "$POSTGRESQL_USERNAME";
         SET search_path TO dbo;
         ALTER DATABASE "$database" SET search_path TO dbo;
