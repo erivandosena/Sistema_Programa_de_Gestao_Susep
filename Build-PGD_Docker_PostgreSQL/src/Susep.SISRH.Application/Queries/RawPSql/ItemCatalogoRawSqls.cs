@@ -83,7 +83,7 @@
 	                    INNER JOIN ""dbo"".""CatalogoDominio"" ""cd"" ON i.""calculoTempoId"" = ""cd"".""catalogoDominioId""
                     WHERE   (@titulo IS NULL OR i.""titulo"" LIKE '%' || @titulo || '%')
                             AND (@formaCalculoTempoId IS NULL OR i.""calculoTempoId"" = @formaCalculoTempoId)
-                            AND ( ""ProgramaGestao"".""IIF""(@permiteTrabalhoRemoto = null, null, ""ProgramaGestao"".""IIF""(@permiteTrabalhoRemoto = true, 1, 0)) IS NULL OR i.""permiteRemoto"" = ""ProgramaGestao"".""IIF""(@permiteTrabalhoRemoto = null, null, ""ProgramaGestao"".""IIF""(@permiteTrabalhoRemoto = true, 1, 0)) )
+                            AND (@permiteTrabalhoRemoto IS NULL OR i.""permiteRemoto"" = @permiteTrabalhoRemoto)
 
                     ORDER BY i.""titulo"", i.""complexidade""
 
@@ -95,7 +95,7 @@
 	                    INNER JOIN ""dbo"".""CatalogoDominio"" ""cd"" ON i.""calculoTempoId"" = ""cd"".""catalogoDominioId""
                     WHERE   (@titulo IS NULL OR i.""titulo"" LIKE '%' || @titulo || '%')
                             AND (@formaCalculoTempoId IS NULL OR i.""calculoTempoId"" = @formaCalculoTempoId)
-                            AND ( ""dbo"".""IIF""(@permiteTrabalhoRemoto = null, null, ""dbo"".""IIF""(@permiteTrabalhoRemoto = true, 1, 0)) IS NULL OR i.""permiteRemoto"" = ""dbo"".""IIF""(@permiteTrabalhoRemoto = null, null, ""dbo"".""IIF""(@permiteTrabalhoRemoto = true, 1, 0)) )
+                            AND (@permiteTrabalhoRemoto IS NULL OR i.""permiteRemoto"" = @permiteTrabalhoRemoto)
                 ";
             }
         }

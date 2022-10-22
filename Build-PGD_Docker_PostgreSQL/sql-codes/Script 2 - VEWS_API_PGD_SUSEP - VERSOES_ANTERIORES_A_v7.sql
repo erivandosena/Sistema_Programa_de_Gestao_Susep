@@ -35,7 +35,7 @@ GROUP BY "pactoTrabalhoId";
 CREATE OR REPLACE VIEW "VW_PACTO"
 AS 
 select "pactoTrabalhoId" as id_pacto,
-    CASE WHEN pa."situacaoId" IN (404) THEN 'cancelado' ELSE NULL END AS situacao, 
+    CASE WHEN pa."situacaoId" IN (404) THEN 'cancelado' ELSE cd1.descricao END AS situacao, 
 	pe."pesMatriculaSiape" as matricula_siape,  pe."pesCPF" as cpf,
 	pe."pesNome" as nome_participante,
 	s."undCodigoSIORG" as cod_unidade_exercicio, 

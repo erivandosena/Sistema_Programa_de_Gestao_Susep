@@ -272,7 +272,7 @@
                               p.""situacaoId"" = 405 AND
                               (""chefe"".""pessoaId"" IS NULL OR p.""pessoaId"" = @pessoaId)
                         ORDER BY ""dataSolicitacao""
-
+                        
                 ";
             }
         }
