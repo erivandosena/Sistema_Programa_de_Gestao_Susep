@@ -164,7 +164,10 @@ Acessar o diretório **`/Deploy-PGD_Kubernetes_HAProxy`**
 `$> kubectl apply -f postgres-deployment.yml`  
 `$> kubectl apply -f pgadmin-deployment.yml`  
 
-#### HAProxy Kubernetes Ingress Controller  
+##### Arquitetura HAProxy Kubernetes Ingress Controller  
+
+![Arquitetura HAProxy Ingress Controller e Kubernetes](./Arquitetura-Haproxy_K8s.jpg)
+
 ```console
 kubectl apply -f https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/master/deploy/haproxy-ingress.yaml
 
